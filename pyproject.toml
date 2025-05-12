@@ -4,8 +4,8 @@
 
 [project]
 name = "Win32Hooking"
-version = "0.0.1"
-dependencies = []
+version = "1.0.0"
+dependencies = ["PyPeLoader>=0.2.0", "PythonToolsKit>=1.2.4"]
 authors = [
     {name = "Maurice Lambert", email = "mauricelambert434@gmail.com"},
 ]

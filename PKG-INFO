@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: Win32Hooking
-Version: 0.0.1
+Version: 1.0.0
 Summary: This module hooks IAT and EAT to monitor all external functions calls, very useful for [malware] reverse and debugging.
 Home-page: https://github.com/mauricelambert/Win32Hooking
 Download-URL: https://mauricelambert.github.io/info/python/security/Win32Hooking.pyz
@@ -34,6 +34,8 @@ Classifier: License :: OSI Approved :: GNU General Public License v3 or later (G
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
+Requires-Dist: PyPeLoader>=0.2.0
+Requires-Dist: PythonToolsKit>=1.2.4
 Dynamic: author
 Dynamic: download-url
 Dynamic: home-page
@@ -57,6 +59,9 @@ This package require:
 
  - python3
  - python3 Standard Library
+ - PyPeLoader >= 0.2.0
+ - PythonToolsKit >= 1.2.4
+
 
 ## Installation
 

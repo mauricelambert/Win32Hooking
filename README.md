@@ -15,6 +15,9 @@ This package require:
 
  - python3
  - python3 Standard Library
+ - PyPeLoader >= 0.2.0
+ - PythonToolsKit >= 1.2.4
+
 
 ## Installation
 
