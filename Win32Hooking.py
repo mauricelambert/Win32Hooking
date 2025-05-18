@@ -25,7 +25,7 @@ This module hooks IAT and EAT to monitor all external functions calls,
 very useful for [malware] reverse and debugging.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -62,17 +62,19 @@ from ctypes import (
     addressof,
     sizeof,
     get_last_error,
+    string_at,
     c_size_t,
     c_void_p,
     c_byte,
     c_char,
     c_int,
     c_uint8,
-    c_ushort,
     c_uint16,
+    c_ushort,
     c_uint32,
-    c_uint64,
     c_ulong,
+    c_uint64,
+    c_ulonglong,
     c_char_p,
     c_wchar_p,
 )
@@ -89,7 +91,15 @@ from PyPeLoader import (
     get_imports,
     load_relocations,
 )
-from ctypes.wintypes import DWORD, HMODULE, MAX_PATH, HANDLE, BOOL
+from ctypes.wintypes import (
+    DWORD,
+    HMODULE,
+    MAX_PATH,
+    HANDLE,
+    BOOL,
+    LPCWSTR,
+    LPVOID,
+)
 from typing import Iterator, Callable, Dict, Union, List, Tuple
 from logging import StreamHandler, DEBUG, FileHandler, Logger
 from PythonToolsKit.Logs import get_custom_logger
@@ -131,7 +141,7 @@ class UNICODE_STRING(Structure):
     _fields_ = [
         ("Length", c_ushort),
         ("MaximumLength", c_ushort),
-        ("Buffer", c_wchar_p)
+        ("Buffer", c_wchar_p),
     ]
 
 
@@ -192,6 +202,110 @@ class MEMORY_BASIC_INFORMATION(Structure):
     ]
 
 
+X86_CONTEXT_i386 = 0x00010000
+X86_CONTEXT_CONTROL = 0x00000001
+X86_CONTEXT_INTEGER = 0x00000002
+X86_CONTEXT_FULL = X86_CONTEXT_CONTROL | X86_CONTEXT_INTEGER | X86_CONTEXT_i386
+
+
+class FLOATING_SAVE_AREA(Structure):
+    _fields_ = [
+        ("ControlWord", c_uint32),
+        ("StatusWord", c_uint32),
+        ("TagWord", c_uint32),
+        ("ErrorOffset", c_uint32),
+        ("ErrorSelector", c_uint32),
+        ("DataOffset", c_uint32),
+        ("DataSelector", c_uint32),
+        ("RegisterArea", c_byte * 80),
+        ("Cr0NpxState", c_uint32),
+    ]
+
+
+class CONTEXT32(Structure):
+    _fields_ = [
+        ("ContextFlags", c_uint32),
+        ("Dr0", c_uint32),
+        ("Dr1", c_uint32),
+        ("Dr2", c_uint32),
+        ("Dr3", c_uint32),
+        ("Dr6", c_uint32),
+        ("Dr7", c_uint32),
+        ("FloatSave", FLOATING_SAVE_AREA),
+        ("SegGs", c_uint32),
+        ("SegFs", c_uint32),
+        ("SegEs", c_uint32),
+        ("SegDs", c_uint32),
+        ("Edi", c_uint32),
+        ("Esi", c_uint32),
+        ("Ebx", c_uint32),
+        ("Edx", c_uint32),
+        ("Ecx", c_uint32),
+        ("Eax", c_uint32),
+        ("Ebp", c_uint32),
+        ("Eip", c_uint32),
+        ("SegCs", c_uint32),
+        ("EFlags", c_uint32),
+        ("Esp", c_uint32),
+        ("SegSs", c_uint32),
+        ("ExtendedRegisters", c_byte * 512),
+    ]
+
+
+X64_CONTEXT_CONTROL = 0x00100001
+X64_CONTEXT_INTEGER = 0x00010000
+X64_CONTEXT_FULL = X64_CONTEXT_CONTROL | X64_CONTEXT_INTEGER
+
+is_x64: bool = sizeof(c_void_p) == 8
+
+
+class CONTEXT64(Structure):
+    """
+    This class is the ThreadContext structure for NtCreateThread.
+    """
+
+    _fields_ = [
+        ("P1Home", c_ulonglong),
+        ("P2Home", c_ulonglong),
+        ("P3Home", c_ulonglong),
+        ("P4Home", c_ulonglong),
+        ("P5Home", c_ulonglong),
+        ("P6Home", c_ulonglong),
+        ("ContextFlags", c_ulong),
+        ("MxCsr", c_ulong),
+        ("SegCs", c_ushort),
+        ("SegDs", c_ushort),
+        ("SegEs", c_ushort),
+        ("SegFs", c_ushort),
+        ("SegGs", c_ushort),
+        ("SegSs", c_ushort),
+        ("EFlags", c_ulong),
+        ("Dr0", c_ulonglong),
+        ("Dr1", c_ulonglong),
+        ("Dr2", c_ulonglong),
+        ("Dr3", c_ulonglong),
+        ("Dr6", c_ulonglong),
+        ("Dr7", c_ulonglong),
+        ("Rax", c_ulonglong),
+        ("Rcx", c_ulonglong),
+        ("Rdx", c_ulonglong),
+        ("Rbx", c_ulonglong),
+        ("Rsp", c_ulonglong),
+        ("Rbp", c_ulonglong),
+        ("Rsi", c_ulonglong),
+        ("Rdi", c_ulonglong),
+        ("R8", c_ulonglong),
+        ("R9", c_ulonglong),
+        ("R10", c_ulonglong),
+        ("R11", c_ulonglong),
+        ("R12", c_ulonglong),
+        ("R13", c_ulonglong),
+        ("R14", c_ulonglong),
+        ("R15", c_ulonglong),
+        ("Rip", c_ulonglong),
+    ]
+
+
 @dataclass
 class Function:
     module: MODULEENTRY32
@@ -214,6 +328,190 @@ class Callbacks:
     This class contains all callbacks define in configuration.
     """
 
+    def ntdll_NtCreateThreadEx_pre(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+    ) -> Tuple:
+        """
+        This function is a callback executed before the NtCreateThreadEx
+        execution to change the start address to initialize the new stack.
+        """
+
+        arguments = (
+            arguments[0],
+            arguments[1],
+            arguments[2],
+            arguments[3],
+            get_thread_hook(arguments[4]),
+            arguments[5],
+            arguments[6],
+            arguments[7],
+            arguments[8],
+            arguments[9],
+            arguments[10],
+        )
+
+        callback_print(
+            "               ",
+            "call  ",
+            function.module_name,
+            function.name + ":",
+            *(
+                [
+                    (
+                        f"{x} = {arguments[i]} ({arguments[i]:x})"
+                        if isinstance(arguments[i], int)
+                        else f"{x} = {arguments[i]}"
+                    )
+                    for i, x in enumerate(function.arguments)
+                ]
+                if function.arguments
+                else []
+            ),
+        )
+
+        return arguments
+
+    def ntdll_NtCreateThread_pre(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+    ) -> Tuple:
+        """
+        This function is a callback executed before the NtCreateThread
+        execution to change the start address to initialize the new stack.
+        """
+
+        if is_x64:
+            context = CONTEXT64()
+            size = sizeof(CONTEXT64)
+        else:
+            context = CONTEXT32()
+            size = sizeof(CONTEXT32)
+
+        memmove(addressof(context), arguments[5], size)
+
+        if is_x64:
+            context.Rip = get_thread_hook(context.Rip)
+        else:
+            context.Eip = new_ip
+
+        memmove(arguments[5], addressof(context), size)
+        return arguments
+
+    def breakpoint(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function is a simple breakpoint to block the execution and analyze
+        arguments and returns values.
+        """
+
+        breakpoint()
+
+    def kernelbase_GetWindowsDirectoryW(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function defines the GetWindowsDirectoryW hooking behavior.
+        """
+
+        if return_value:
+            print(
+                " " * (4 * (CallbackManager.indent + 1)),
+                "GetWindowsDirectoryW: [OUT] Path =",
+                c_wchar_p(arguments[0]).value + ",",
+                "[IN] Size =",
+                arguments[1],
+                "[OUT] Number of bytes written =",
+                return_value,
+            )
+        return return_value
+
+    def kernelbase_GetModuleHandleExW(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function defines the GetModuleHandleExW hooking behavior.
+        """
+
+        if arguments[0] != 4:
+            print(
+                " " * (4 * (CallbackManager.indent + 1)),
+                "GetModuleHandleExW:",
+                "[IN] Flags =",
+                hex(arguments[0]) + ",",
+                "[IN] Module Name =",
+                c_wchar_p(arguments[1]).value,
+                "[OUT] Module Handle =",
+                hex(arguments[2] if arguments[2] else 0) + ",",
+                "[OUT] Success =",
+                bool(return_value),
+            )
+
+        return return_value
+
+    def kernelbase_GetModuleFileNameW(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function defines the GetModuleFileNameW hooking behavior.
+        """
+
+        if return_value:
+            print(
+                " " * (4 * (CallbackManager.indent + 1)),
+                "GetModuleFileNameW:",
+                "[IN] Module Handle =",
+                hex(arguments[0] if arguments[0] else 0) + ",",
+                "[OUT] Filename =",
+                c_wchar_p(arguments[1]).value,
+                "[IN] Size =",
+                str(arguments[2]) + ",",
+                "[OUT] Number of bytes written =",
+                return_value,
+            )
+
+        return return_value
+
+    def ntdll_ApiSetQueryApiSetPresence(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function defines the ApiSetQueryApiSetPresence hooking behavior.
+        """
+
+        namespace = cast(arguments[0], POINTER(UNICODE_STRING)).contents
+        present = cast(arguments[1], POINTER(c_bool)).contents.value
+
+        print(
+            " " * (4 * (CallbackManager.indent + 1)),
+            "ApiSetQueryApiSetPresence: [IN] Namespace =",
+            repr(unicode_string.Buffer) + ",",
+            "[OUT] Present =",
+            str(present) + ',',
+            '[OUT] Return =',
+            str(return_value)
+        )
+
+        return return_value
+
     def ntdll_LdrLoadDll(
         type_: str,
         function: Union[Function, ImportFunction],
@@ -221,21 +519,60 @@ class Callbacks:
         return_value: c_void_p,
     ) -> c_void_p:
         """
-        This function defines the LdrLoadDll hooking behaviour.
+        This function defines the LdrLoadDll hooking behavior.
         """
 
         unicode_string = cast(arguments[2], POINTER(UNICODE_STRING)).contents
+        module_handle = cast(arguments[3], POINTER(c_uint64)).contents.value
+
+        dos_headers = cast(module_handle, POINTER(IMAGE_DOS_HEADER)).contents
+        nt_position = module_handle + dos_headers.e_lfanew
+        nt_headers = cast(nt_position, POINTER(IMAGE_NT_HEADERS)).contents
+        file_header = nt_headers.FileHeader
+
+        if file_header.Machine == 0x014C:  # IMAGE_FILE_MACHINE_I386
+            optional_header = nt_headers.OptionalHeader
+            arch = 32
+        elif file_header.Machine == 0x8664:  # IMAGE_FILE_MACHINE_AMD64
+            optional_header_position = (
+                nt_position
+                + sizeof(IMAGE_NT_HEADERS)
+                - sizeof(IMAGE_OPTIONAL_HEADER32)
+            )
+            optional_header = cast(
+                optional_header_position, POINTER(IMAGE_OPTIONAL_HEADER64)
+            ).contents
+            arch = 64
+
+        module = MODULEENTRY32(
+            sizeof(MODULEENTRY32),
+            1,
+            getpid(),
+            0,
+            1,
+            cast(module_handle, POINTER(c_byte)),
+            optional_header.SizeOfImage,
+            module_handle,
+            unicode_string.Buffer.encode("latin-1").ljust(256, b"\0"),
+            b"\0" * MAX_PATH,
+        )
+
+        if module_handle not in modules:
+            imports = []
+            hooks_DLL(module, Hooks.export_hooks, imports)
+            hooks_IAT(imports, False)
+
         print(
-            ' ' * (4 * (CallbackManager.indent + 1)),
-            'LdrLoadDll: [IN] Path =',
-            str(c_wchar_p(arguments[0])) + ',',
-            '[IN] Flags =',
-            hex(cast(arguments[1], POINTER(c_ulong)).contents.value) + ',',
-            '[IN] Module =',
-            repr(unicode_string.Buffer) + ',',
-            '[OUT] Handle =',
-            arguments[3],
-            '(' + hex(arguments[3]) + ')',
+            " " * (4 * (CallbackManager.indent + 1)),
+            "LdrLoadDll: [IN] Path =",
+            str(c_wchar_p(arguments[0])) + ",",
+            "[IN] Flags =",
+            hex(cast(arguments[1], POINTER(c_ulong)).contents.value) + ",",
+            "[IN] Module =",
+            repr(unicode_string.Buffer) + ",",
+            "[OUT] Handle =",
+            module_handle,
+            "(" + hex(module_handle) + ")",
         )
         return return_value
 
@@ -246,14 +583,14 @@ class Callbacks:
         return_value: c_void_p,
     ) -> c_void_p:
         """
-        This function defines the GetProcAddress hooking behaviour.
+        This function defines the GetProcAddress hooking behavior.
         """
 
         module = arguments[0]
         function_name = arguments[1].decode()
         identifier = str(module) + "|" + function_name
 
-        if proc := Hooks.get_proc_address_hooks.get(identifier) is None:
+        if (proc := Hooks.get_proc_address_hooks.get(identifier)) is None:
             func = Hooks.export_hooks[identifier]
             proc = Function(
                 func.module,
@@ -269,8 +606,8 @@ class Callbacks:
 
         proc_pointer = cast(proc.hook, c_void_p).value
         callback_print(
-            (' ' * (4 * (CallbackManager.indent + 1))) +
-            f"GetProcAddress: Module = {hex(module)} ({proc.module_name})"
+            (" " * (4 * (CallbackManager.indent + 1)))
+            + f"GetProcAddress: Module = {hex(module)} ({proc.module_name})"
             f", Function = {function_name}, HookAddress = {hex(proc_pointer)}"
         )
 
@@ -354,6 +691,19 @@ class Hooks:
     import_hooks: Dict[str, ImportFunction] = {}
     name_hooks: Dict[str, Function] = {}
     types: Dict[str, CFUNCTYPE] = {}
+    threads_stack_alloc: Dict[int, int] = {}
+
+
+def resolve_type(module_type: str) -> type:
+    """
+    This function returns a type from python module.
+    """
+
+    modules, type_ = module_type.rsplit(".", 1)
+    module = __import__(modules)
+    for element in modules.split(".")[1:]:
+        module = getattr(module, element)
+    return getattr(module, type_)
 
 
 def get_callback_type(
@@ -370,16 +720,14 @@ def get_callback_type(
     if return_value is None:
         return_value = c_void_p
     else:
-        module, type_ = return_value.rsplit(".", 1)
-        return_value = getattr(__import__(module), type_)
+        return_value = resolve_type(return_value)
 
     if arguments is None:
         arguments_ = [c_void_p] * 67
     else:
         arguments_ = []
         for argument in arguments:
-            module, type_ = argument["type"].rsplit(".", 1)
-            arguments_.append(getattr(__import__(module), type_))
+            arguments_.append(resolve_type(argument["type"]))
 
     return CFUNCTYPE(return_value, *arguments_)
 
@@ -406,8 +754,31 @@ VirtualProtect = kernel32.VirtualProtect
 VirtualProtect.argtypes = [c_void_p, c_size_t, DWORD, POINTER(DWORD)]
 VirtualProtect.restype = BOOL
 
+VirtualAlloc = kernel32.VirtualAlloc
+VirtualAlloc.argtypes = [c_void_p, c_size_t, DWORD, DWORD]
+VirtualAlloc.restype = LPVOID
+
+GetModuleHandleW = kernel32.GetModuleHandleW
+GetModuleHandleW.argtypes = [LPCWSTR]
+GetModuleHandleW.restype = HMODULE
+
+LoadLibraryW = kernel32.LoadLibraryW
+LoadLibraryW.argtypes = [LPCWSTR]
+LoadLibraryW.restype = HMODULE
+
+GetProcAddress = kernel32.GetProcAddress
+GetProcAddress.argtypes = [HMODULE, c_char_p]
+GetProcAddress.restype = c_void_p
+
+modules: Dict[Union[int, str], MODULEENTRY32] = {}
+
 
 def get_logger(name: str) -> Logger:
+    """
+    This function gets a specific logger and modify
+    the handler but keep the formatter.
+    """
+
     logger = get_custom_logger(name)
     file_handler = FileHandler(name + ".log")
     logger.addHandler(file_handler)
@@ -521,7 +892,7 @@ def callback_return_printer(
         function.name + ":",
         (
             (str(return_value) + " (" + hex(return_value) + ")")
-            if return_value is not None
+            if return_value is not None and not isinstance(return_value, str)
             else str(return_value)
         ),
     )
@@ -535,7 +906,7 @@ def callback_call(
     arguments: Tuple,
 ) -> c_void_p:
     """
-    This function detects wich function should be call and call it.
+    This function detects which callback should be call and call it.
     """
 
     temp_specific_call = None
@@ -543,7 +914,7 @@ def callback_call(
     if len(function.calls) > function.count_call:
         call = function.calls[function.count_call]
         return_value = call.get("return_value", return_value)
-        temp_specific_call = call.get("callback", specific_call)
+        temp_specific_call = call.get("post_callback", specific_call)
 
     if temp_specific_call := (temp_specific_call or specific_call):
         return_value = temp_specific_call(
@@ -551,6 +922,28 @@ def callback_call(
         )
 
     return return_value
+
+
+def pre_callback_call(
+    function: ImportFunction,
+    type_: str,
+    arguments: Tuple,
+) -> Tuple:
+    """
+    This function detects which callback should be call and call it.
+    """
+
+    temp_specific_call = None
+
+    if len(function.calls) > function.count_call:
+        temp_specific_call = function.calls[function.count_call].get(
+            "pre_callback", function.pre_exec_hook
+        )
+
+    if temp_specific_call := (temp_specific_call or function.pre_exec_hook):
+        arguments = temp_specific_call(type_, function, arguments)
+
+    return arguments
 
 
 def generic_callback_generator(
@@ -573,6 +966,7 @@ def generic_callback_generator(
         CallbackManager.run = -1
         start = ((CallbackManager.indent * 4) * " ") + type_
         callback_call_printer(function, callback_type, arguments, start)
+        arguments = pre_callback_call(function, type_, arguments)
 
         function_pointer = callback_type(function.address)
         CallbackManager.run = get_native_id()
@@ -631,13 +1025,130 @@ def find_free_executable_region(
 
 def generate_absolute_jump(address: int) -> bytes:
     """
-    This function generates absolute JUMP.
+    This function generates an absolute JUMP instruction.
     """
 
     mov_rax = b"\x48\xb8" + address.to_bytes(8, byteorder="little")
     jmp_rax = b"\xff\xe0"
     return mov_rax + jmp_rax
 
+def generate_absolute_call(address: int) -> bytes:
+    """
+    This function generates an absolute CALL instruction.
+    """
+    mov_rax = b"\x48\xb8" + address.to_bytes(8, byteorder="little")
+    call_rax = b"\xff\xd0"
+    return mov_rax + call_rax
+
+def build_stack_debug_shellcode(printf_addr: int) -> bytes:
+    """
+    Build position-independent x64 shellcode that:
+      - Computes RBP - RSP (used stack in current function)
+      - Calls printf("Stack used: 0x%llx\n", <usage>)
+    """
+    shellcode = b""
+
+    # sub rsp, 0x28  ; align + shadow space (Win x64 ABI)
+    shellcode += b"\x48\x83\xEC\x28"
+
+    # mov rax, rbp
+    shellcode += b"\x48\x89\xE8"
+
+    # sub rax, rsp  ; rax = rbp - rsp
+    shellcode += b"\x48\x29\xE0"
+
+    # lea rcx, [rip+0] ; will be patched to point to format string
+    shellcode += b"\x48\x8D\x0D\x00\x00\x00\x00"
+
+    # mov rdx, rax
+    shellcode += b"\x48\x89\xC2"
+
+    # mov rax, <printf_addr>
+    printf_bytes = c_uint64(printf_addr)
+    printf_raw = string_at(byref(printf_bytes), 8)
+    shellcode += b"\x48\xB8" + printf_raw
+
+    # call rax
+    shellcode += b"\xFF\xD0"
+
+    # add rsp, 0x28
+    shellcode += b"\x48\x83\xC4\x28"
+
+    # format string: "Stack used: 0x%llx\n\0"
+    fmt = b"Stack used: 0x%llx\n\0"
+    offset = len(shellcode)
+    shellcode += fmt
+
+    # Patch LEA offset (relative to next instruction after lea)
+    rel_offset = offset - (10 + 7)
+    offset_bytes = string_at(byref(c_uint32(rel_offset)), 4)
+    shellcode = shellcode[:13] + offset_bytes + shellcode[17:]
+
+    return shellcode
+
+
+def generate_new_thread_stack(address: int) -> bytes:
+    """
+    This function generates the stack for the new thread.
+    """
+
+    shellcode = b''
+
+    for key, function in Hooks.name_hooks.items():
+        if key == "MSVCRT.DLL|printf":
+            shellcode = build_stack_debug_shellcode(function.address)
+
+    return (
+        b"\x48\x81\xec\x00\x02\x00\x00"                    # sub rsp, 0x200
+        + shellcode
+        + generate_absolute_call(address)
+        + b"\x48\x81\xc4\x00\x02\x00\x00\x48\x31\xc0\xc3"  # add rsp, 0x200
+                                                           # xor rax, rax
+                                                           # ret
+    )
+
+
+def executable_instructions(instructions: bytes) -> int:
+    """
+    Allocate memory, write data to it, change the permissions to read-execute,
+    and return the address.
+    """
+
+    size = len(instructions)
+    allocated_memory = VirtualAlloc(
+        None, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE
+    )
+
+    if not allocated_memory:
+        raise MemoryError("Failed to allocate memory.")
+
+    memmove(allocated_memory, instructions, size)
+
+    old_protect = DWORD()
+    result = VirtualProtect(
+        allocated_memory, size, PAGE_EXECUTE_READ, byref(old_protect)
+    )
+
+    if not result:
+        raise MemoryError("Failed to change memory protection.")
+
+    return allocated_memory
+
+
+def get_thread_hook(start_address: int):
+    '''
+    This function returns the thread hooks for a specific starting point.
+    '''
+
+    if Hooks.threads_stack_alloc.get(start_address):
+        thread_hook = start_address
+    else:
+        thread_hook = executable_instructions(
+            generate_new_thread_stack(start_address)
+        )
+        Hooks.threads_stack_alloc[thread_hook] = start_address
+
+    return thread_hook
 
 def write_in_memory(address: int, data: bytes) -> None:
     """
@@ -661,11 +1172,11 @@ def build_generic_callback(type_: str, function: Function) -> None:
     This function builds the generic callback using configurations.
     """
 
-    def get_callback(config):
-        if callback := config.get("callback"):
+    def get_callback(config, type_):
+        if callback := config.get(type_):
             if not isinstance(callback, Callable):
-                return getattr(Callbacks, config["callback"])
-            return config["callback"]
+                return getattr(Callbacks, config[type_])
+            return config[type_]
 
     identifier = (
         function.module_name.upper() + "|" + function.name
@@ -687,15 +1198,16 @@ def build_generic_callback(type_: str, function: Function) -> None:
     function.hook = generic_callback_generator(
         type_,
         function,
-        get_callback(function_config),
+        get_callback(function_config, "post_callback"),
         callback_type,
     )
+    function.pre_exec_hook = get_callback(function_config, "pre_callback")
     function.arguments = arguments and [x["name"] for x in arguments]
     function.hide = function_config.get("hide", False)
 
     calls = []
     for call in function_config.get("calls", []):
-        call["callback"] = get_callback(call)
+        call["post_callback"] = get_callback(call, "post_callback")
         calls.append(call)
     function.calls = calls
 
@@ -717,8 +1229,7 @@ def hook_function(function: Function) -> None:
         )
     ) is None:
         hook_jump_address = find_free_executable_region(
-            addressof(function.module.modBaseAddr.contents)
-            + function.module.modBaseSize,
+            module_base + function.module.modBaseSize,
             function.module.export_directory.NumberOfFunctions,
         )
         Hooks.reserved_hooks_space[function.module_name] = hook_jump_address
@@ -845,9 +1356,13 @@ def list_exports(
     This function returns exported functions.
     """
 
-    export_dirrectory_rva = optional_header.DataDirectory[
+    export_directory = optional_header.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_EXPORT
-    ].VirtualAddress
+    ]
+    module.export_directory_rva = export_dirrectory_rva = (
+        export_directory.VirtualAddress
+    )
+    module.export_directory_size = export_directory.Size
 
     if export_dirrectory_rva == 0:
         return None
@@ -917,40 +1432,152 @@ def list_modules() -> Iterator[MODULEENTRY32]:
     CloseHandle(handle_snapshot)
 
 
+def hooks_DLL(
+    module: MODULEENTRY32,
+    functions: Dict[str, Function],
+    imports: List[ImportFunction],
+) -> List[Function]:
+    """
+    This function hooks a module function addresses
+    (all functions in EAT and configured functions in IAT).
+    """
+
+    base_address = addressof(module.modBaseAddr.contents)
+    headers = load_headers_from_memory(module)
+    imports.extend(
+        get_imports(
+            get_PeHeaders(*headers), headers[0], module.szModule.decode()
+        )
+    )
+    forwarded_functions = []
+
+    new_module = MODULEENTRY32()
+    memmove(byref(new_module), byref(module), sizeof(MODULEENTRY32))
+    modules[base_address] = new_module
+    modules[new_module.szModule] = new_module
+
+    for function in list_exports(new_module, *headers):
+        if (
+            function.module.export_directory_rva
+            <= function.rva
+            <= function.module.export_directory_rva
+            + function.module.export_directory_size
+        ):
+            forwarded_functions.append(function)
+            continue
+
+        Hooks.name_hooks[
+            function.module_name.upper() + "|" + function.name
+        ] = function
+        functions[str(base_address) + "|" + function.name] = function
+        # if function.rva != cast(function.export_address, POINTER(c_uint32)).contents.value:
+        #     print(function)
+        hook_function(function)
+
+    return forwarded_functions
+
+
+def resolve_ordinal(module: MODULEENTRY32, ordinal: int) -> int:
+    """
+    This function resolves the address for an ordinal.
+    """
+
+    return cast(
+        addressof(module.modBaseAddr.contents)
+        + module.export_directory.AddressOfFunctions,
+        POINTER(c_uint32 * module.export_directory.NumberOfFunctions),
+    ).contents[ordinal - 1]
+
+
+def resolve_module_by_address(
+    base_address: int,
+    hooks: Dict[str, Function],
+    imports: List[ImportFunction],
+) -> MODULEENTRY32:
+    """
+    This function returns the module for the base address sent as argument.
+    """
+
+    if module := modules.get(base_address):
+        return module
+
+    for module in list_modules():
+        if base_address == addressof(module.modBaseAddr.contents):
+            hooks_forwarded(hooks_DLL(module, hooks, imports), hooks, imports)
+            return modules[base_address]
+
+
+def hooks_forwarded(
+    functions: List[Function],
+    hooks: Dict[str, Function],
+    imports: List[ImportFunction],
+    count: int = 0,
+) -> None:
+    """
+    This function hooks forwarded functions.
+    """
+
+    functions_copy = functions.copy()
+
+    for function in functions:
+        module_name, function_name = (
+            c_char_p(function.address).value.decode().split(".")
+        )
+        module = None
+
+        base_address = LoadLibraryW(module_name)
+        if base_address is not None:
+            module = resolve_module_by_address(base_address, hooks, imports)
+        if function_name[0] == "#":
+            function.address = resolve_ordinal(module, int(function_name[1:]))
+        else:
+            target_function = hooks.get(
+                str(base_address) + "|" + function_name
+            )
+            if target_function is None:
+                address = GetProcAddress(
+                    GetModuleHandleW(function.module_name),
+                    function.name.encode(),
+                )
+                if not address:
+                    continue
+                function.address = address
+            else:
+                function.address = target_function.address
+
+        Hooks.name_hooks[
+            function.module_name.upper() + "|" + function.name
+        ] = function
+        hooks[
+            str(addressof(function.module.modBaseAddr.contents))
+            + "|"
+            + function.name
+        ] = function
+
+        # function.module = target_function.module
+
+        hook_function(function)
+        functions_copy.remove(function)
+
+    if functions_copy and count != len(functions_copy):
+        hooks_forwarded(functions_copy, hooks, imports, len(functions_copy))
+
+
 def hooks_DLLs() -> Dict[str, Function]:
     """
-    This function hooks the module (imported DLLs):
+    This function hooks all loaded modules (imported DLLs):
         - EAT (Export Address Table) functions addresses,
-        - IAT (Import Address Table) functions addresses.
+        - Configured IAT (Import Address Table) functions addresses.
     """
 
     functions = {}
-
     imports = []
-    for module in list_modules():
-        headers = load_headers_from_memory(module)
-        imports.extend(
-            get_imports(
-                get_PeHeaders(*headers), headers[0], module.szModule.decode()
-            )
-        )
+    forwarded = []
 
     for module in list_modules():
-        for function in list_exports(
-            module, *load_headers_from_memory(module)
-        ):
-            Hooks.name_hooks[
-                function.module_name.upper() + "|" + function.name
-            ] = function
-            functions[
-                str(addressof(function.module.modBaseAddr.contents))
-                + "|"
-                + function.name
-            ] = function
-            # if function.rva != cast(function.export_address, POINTER(c_uint32)).contents.value:
-            #     print(function)
-            hook_function(function)
+        forwarded.extend(hooks_DLL(module, functions, imports))
 
+    hooks_forwarded(forwarded, functions, imports)
     hooks_IAT(imports, False)
     return functions
 
@@ -1019,6 +1646,10 @@ def load(file: _BufferedIOBase) -> None:
 
 
 def config():
+    """
+    This function loads configurations in CallbackManager.
+    """
+
     with open("config.json") as file:
         config = json_load(file)
 

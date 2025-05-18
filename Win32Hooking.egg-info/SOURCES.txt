@@ -4,7 +4,6 @@ README.md
 Win32Hooking.py
 config.json
 pyproject.toml
-requirements.txt
 setup.cfg
 setup.py
 Win32Hooking.egg-info/PKG-INFO
