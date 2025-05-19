@@ -25,7 +25,7 @@ This module hooks IAT and EAT to monitor all external functions calls,
 very useful for [malware] reverse and debugging.
 """
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -1036,9 +1036,12 @@ def generate_absolute_call(address: int) -> bytes:
     """
     This function generates an absolute CALL instruction.
     """
+
+    sub_rsp_0x28 = b"\x48\x83\xEC\x28"
     mov_rax = b"\x48\xb8" + address.to_bytes(8, byteorder="little")
     call_rax = b"\xff\xd0"
-    return mov_rax + call_rax
+    add_rsp_0x28 = b"\x48\x83\xC4\x28"
+    return sub_rsp_0x28 + mov_rax + call_rax + add_rsp_0x28
 
 def build_stack_debug_shellcode(printf_addr: int) -> bytes:
     """
@@ -1046,6 +1049,9 @@ def build_stack_debug_shellcode(printf_addr: int) -> bytes:
       - Computes RBP - RSP (used stack in current function)
       - Calls printf("Stack used: 0x%llx\n", <usage>)
     """
+
+    # format string: "Stack used: 0x%llx\n\0"
+    fmt = b"Stack used: 0x%llx\n\0"
     shellcode = b""
 
     # sub rsp, 0x28  ; align + shadow space (Win x64 ABI)
@@ -1063,6 +1069,9 @@ def build_stack_debug_shellcode(printf_addr: int) -> bytes:
     # mov rdx, rax
     shellcode += b"\x48\x89\xC2"
 
+    # mov r8, rsp
+    shellcode += b"\x49\x89\xE0"
+
     # mov rax, <printf_addr>
     printf_bytes = c_uint64(printf_addr)
     printf_raw = string_at(byref(printf_bytes), 8)
@@ -1074,8 +1083,9 @@ def build_stack_debug_shellcode(printf_addr: int) -> bytes:
     # add rsp, 0x28
     shellcode += b"\x48\x83\xC4\x28"
 
-    # format string: "Stack used: 0x%llx\n\0"
-    fmt = b"Stack used: 0x%llx\n\0"
+    # jump [rip + XX]    ; jump after format string
+    shellcode += b"\xE9" + len(fmt).to_bytes(4, 'little')
+
     offset = len(shellcode)
     shellcode += fmt
 

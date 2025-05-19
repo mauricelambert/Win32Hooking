@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Win32Hooking',
-    version="1.1.0",
+    version="1.1.1",
     py_modules=['Win32Hooking'],
     packages=find_packages(include=[]),
     install_requires=["PyPeLoader>=0.2.0", "PythonToolsKit>=1.2.4"],
