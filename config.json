@@ -77,9 +77,220 @@
         "ZwQueryVirtualMemory",
         "NtDelayExecution",
         "ZwDelayExecution",
-        "PssNtCaptureSnapshot"
+        "PssNtCaptureSnapshot",
+        "VirtualAlloc"
     ],
     "functions": {
+        "KERNEL32.DLL|GetLastError": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNEL32.DLL|SetLastError": {
+            "arguments": [
+                {"name": "dwErrCode", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|AreFileApisANSI": {
+            "arguments": [],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|GetCommandLineA": {
+            "arguments": [],
+            "return_value": "ctypes.c_char_p"
+        },
+        "KERNEL32.DLL|GetCommandLineW": {
+            "arguments": [],
+            "return_value": "ctypes.c_wchar_p"
+        },
+        "KERNEL32.DLL|GetACP": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint"
+        },
+        "KERNEL32.DLL|GetEnvironmentStringsW": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|FreeEnvironmentStringsW": {
+            "arguments": [
+                {"name": "penv", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|InitializeSListHead": {
+            "arguments": [
+                {"name": "ListHead", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|SetUnhandledExceptionFilter": {
+            "arguments": [
+                {"name": "lpTopLevelExceptionFilter", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|IsValidCodePage": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|GetCPInfo": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint"},
+                {"name": "lpCPInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|GetProcessHeap": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|HeapAlloc": {
+            "arguments": [
+                {"name": "hHeap", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.wintypes.DWORD"},
+                {"name": "dwBytes", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|HeapFree": {
+            "arguments": [
+                {"name": "hHeap", "type": "ctypes.wintypes.HANDLE"},
+                {"name": "dwFlags", "type": "ctypes.wintypes.DWORD"},
+                {"name": "lpMem", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|MultiByteToWideChar": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint"},
+                {"name": "dwFlags", "type": "ctypes.wintypes.DWORD"},
+                {"name": "lpMultiByteStr", "type": "ctypes.c_void_p"},
+                {"name": "cbMultiByte", "type": "ctypes.c_int"},
+                {"name": "lpWideCharStr", "type": "ctypes.c_void_p"},
+                {"name": "cchWideChar", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNEL32.DLL|WideCharToMultiByte": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint"},
+                {"name": "dwFlags", "type": "ctypes.wintypes.DWORD"},
+                {"name": "lpWideCharStr", "type": "ctypes.c_void_p"},
+                {"name": "cchWideChar", "type": "ctypes.c_int"},
+                {"name": "lpMultiByteStr", "type": "ctypes.c_void_p"},
+                {"name": "cbMultiByte", "type": "ctypes.c_int"},
+                {"name": "lpDefaultChar", "type": "ctypes.c_void_p"},
+                {"name": "lpUsedDefaultChar", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNEL32.DLL|GetStringTypeW": {
+            "arguments": [
+                {"name": "dwInfoType", "type": "ctypes.wintypes.DWORD"},
+                {"name": "lpSrcStr", "type": "ctypes.c_void_p"},
+                {"name": "cchSrc", "type": "ctypes.c_int"},
+                {"name": "lpCharType", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|LCMapStringEx": {
+            "arguments": [
+                {"name": "lpLocaleName", "type": "ctypes.c_void_p"},
+                {"name": "dwMapFlags", "type": "ctypes.wintypes.DWORD"},
+                {"name": "lpSrcStr", "type": "ctypes.c_void_p"},
+                {"name": "cchSrc", "type": "ctypes.c_int"},
+                {"name": "lpDestStr", "type": "ctypes.c_void_p"},
+                {"name": "cchDest", "type": "ctypes.c_int"},
+                {"name": "lpVersionInformation", "type": "ctypes.c_void_p"},
+                {"name": "lpReserved", "type": "ctypes.c_void_p"},
+                {"name": "sortHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNEL32.DLL|GetStartupInfoW": {
+            "arguments": [
+                {"name": "lpStartupInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|GetStdHandle": {
+            "arguments": [
+                {"name": "nStdHandle", "type": "ctypes.wintypes.DWORD"}
+            ],
+            "return_value": "ctypes.wintypes.HANDLE"
+        },
+        "KERNEL32.DLL|GetFileType": {
+            "arguments": [
+                {"name": "hFile", "type": "ctypes.wintypes.HANDLE"}
+            ],
+            "return_value": "ctypes.wintypes.DWORD"
+        },
+        "KERNEL32.DLL|EnterCriticalSection": {
+            "arguments": [
+                {"name": "lpCriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|LeaveCriticalSection": {
+            "arguments": [
+                {"name": "lpCriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|InitializeCriticalSectionEx": {
+            "arguments": [
+                {"name": "lpCriticalSection", "type": "ctypes.c_void_p"},
+                {"name": "dwSpinCount", "type": "ctypes.wintypes.DWORD"},
+                {"name": "Flags", "type": "ctypes.wintypes.DWORD"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|FlsSetValue": {
+            "arguments": [
+                {"name": "dwFlsIndex", "type": "ctypes.wintypes.DWORD"},
+                {"name": "dwFlsIndex", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|FlsSetValue": {
+            "arguments": [
+                {"name": "dwFlsIndex", "type": "ctypes.wintypes.DWORD"},
+                {"name": "dwFlsIndex", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|FlsGetValue": {
+            "arguments": [
+                {"name": "dwFlsIndex", "type": "ctypes.wintypes.DWORD"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|FlsAlloc": {
+            "arguments": [
+                {"name": "lpCallback", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.wintypes.DWORD"
+        },
+        "KERNEL32.DLL|FlsAlloc": {
+            "arguments": [
+                {"name": "lpCallback", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.wintypes.DWORD"
+        },
+        "KERNEL32.DLL|GetSystemTimeAsFileTime": {
+            "arguments": [
+                {"name": "lpSystemTimeAsFileTime", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|QueryPerformanceCounter": {
+            "arguments": [
+                {"name": "lpPerformanceCount", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
         "KERNEL32.DLL|GetProcAddress": {
             "arguments": [
                 {"name": "hModule", "type": "ctypes.c_void_p"},
@@ -120,6 +331,17 @@
                 {"name": "flProtect", "type": "ctypes.c_uint32"}
             ],
             "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|VirtualAlloc": {
+            "arguments": [
+                {"name": "lpAddress", "type": "ctypes.c_void_p"},
+                {"name": "dwSize", "type": "ctypes.c_size_t"},
+                {"name": "flAllocationType", "type": "ctypes.c_uint32"},
+                {"name": "flProtect", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p",
+            "post_callback": "kernelbase_VirtualAlloc_post",
+            "pre_callback": "kernelbase_VirtualAlloc_pre"
         },
         "KERNEL32.DLL|VirtualFree": {
             "arguments": [
@@ -349,10 +571,11 @@
         "KERNEL32.DLL|GetModuleFileNameW": {
             "arguments": [
                 {"name": "hModule", "type": "ctypes.c_void_p"},
-                {"name": "lpFilename", "type": "ctypes.c_wchar_p"},
+                {"name": "lpFilename", "type": "ctypes.c_void_p"},
                 {"name": "nSize", "type": "ctypes.c_uint32"}
             ],
-            "return_value": "ctypes.c_uint32"
+            "return_value": "ctypes.c_uint32",
+            "post_callback": "kernelbase_GetModuleFileNameW"
         },
         "KERNEL32.DLL|FindFirstFileA": {
             "arguments": [
@@ -870,7 +1093,8 @@
               {"name": "AttributeList", "type": "ctypes.c_void_p"}
             ],
             "return_value": "ctypes.c_ulong",
-            "pre_callback": "ntdll_NtCreateThreadEx_pre"
+            "pre_callback": "ntdll_NtCreateThreadEx_pre",
+            "post_callback": "ntdll_NtCreateThread_post"
         },
         "NTDLL.DLL|ZwCreateThreadEx": {
             "arguments": [
@@ -1729,7 +1953,9 @@
               {"name": "lpDirectory", "type": "ctypes.c_char_p"},
               {"name": "nShowCmd", "type": "ctypes.c_int"}
             ],
-            "return_value": "ctypes.c_int"
+            "return_value": "ctypes.c_int",
+            "pre_callback": "shell32_ShellExecuteA_pre",
+            "post_callback": "shell32_ShellExecuteA_post"
         },
         "KERNELBASE.DLL|InitializeSListHead": {
             "arguments": [
@@ -1763,6 +1989,14 @@
         "MSVCRT.DLL|strlen": {
             "arguments": [
               {"name": "str", "type": "ctypes.c_char_p"}
+            ],
+            "return_value": "ctypes.c_size_t"
+        },
+        "MSVCRT.DLL|strncmp": {
+            "arguments": [
+              {"name": "str1", "type": "ctypes.c_char_p"},
+              {"name": "str2", "type": "ctypes.c_char_p"},
+              {"name": "size", "type": "ctypes.c_int"}
             ],
             "return_value": "ctypes.c_size_t"
         },
@@ -1824,9 +2058,9 @@
             "arguments": [
               {"name": "CodePage", "type": "ctypes.c_uint32"},
               {"name": "dwFlags", "type": "ctypes.c_uint32"},
-              {"name": "lpMultiByteStr", "type": "ctypes.c_char_p"},
+              {"name": "lpMultiByteStr", "type": "ctypes.c_void_p"},
               {"name": "cbMultiByte", "type": "ctypes.c_int"},
-              {"name": "lpWideCharStr", "type": "ctypes.c_wchar_p"},
+              {"name": "lpWideCharStr", "type": "ctypes.c_void_p"},
               {"name": "cchWideChar", "type": "ctypes.c_int"}
             ],
             "return_value": "ctypes.c_int"

@@ -25,7 +25,7 @@ This module hooks IAT and EAT to monitor all external functions calls,
 very useful for [malware] reverse and debugging.
 """
 
-__version__ = "1.1.1"
+__version__ = "1.2.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -77,6 +77,7 @@ from ctypes import (
     c_ulonglong,
     c_char_p,
     c_wchar_p,
+    c_bool,
 )
 from PyPeLoader import (
     IMAGE_DOS_HEADER,
@@ -100,7 +101,7 @@ from ctypes.wintypes import (
     LPCWSTR,
     LPVOID,
 )
-from typing import Iterator, Callable, Dict, Union, List, Tuple
+from typing import Iterator, Callable, Dict, Union, List, Tuple, Set, Iterable
 from logging import StreamHandler, DEBUG, FileHandler, Logger
 from PythonToolsKit.Logs import get_custom_logger
 from sys import argv, executable, exit, stderr
@@ -180,8 +181,8 @@ class IMAGE_EXPORT_DIRECTORY(Structure):
         ("Base", c_uint32),
         ("NumberOfFunctions", c_uint32),
         ("NumberOfNames", c_uint32),
-        ("AddressOfFunctions", c_uint32),  # RVA to DWORD array
-        ("AddressOfNames", c_uint32),  # RVA to RVA array (function names)
+        ("AddressOfFunctions", c_uint32),     # RVA to DWORD array
+        ("AddressOfNames", c_uint32),         # RVA to RVA array (function names)
         ("AddressOfNameOrdinals", c_uint32),  # RVA to WORD array
     ]
 
@@ -315,8 +316,10 @@ class Function:
     rva: int
     export_address: int
     index: int
+    ordinal: int
     pointer: type = None
     hook: Callable = None
+    hook_rva: int = None
     arguments: List[str] = None
     hide: bool = False
     count_call: int = 0
@@ -328,6 +331,47 @@ class Callbacks:
     This class contains all callbacks define in configuration.
     """
 
+    thread_ids_to_unhook_NtAllocateVirtualMemory: Set[int] = set()
+
+    def kernelbase_VirtualAlloc_pre(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+    ) -> Tuple:
+        """
+        This function is a callback executed before the VirtualAlloc
+        execution to unhook NtAllocateVirtualMemory on a new thread creation.
+        """
+
+        if get_native_id() not in Callbacks.thread_ids_to_unhook_NtAllocateVirtualMemory:
+            return arguments
+
+        unhook_IAT("ntdll.dll", "NtAllocateVirtualMemory", "KERNELBASE.dll")
+        unhook_EAT("ntdll.dll", "NtAllocateVirtualMemory")
+        return arguments
+
+    def kernelbase_VirtualAlloc_post(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function is a callback executed after the VirtualAlloc
+        execution to rehook NtAllocateVirtualMemory on a new thread creation.
+        """
+
+        thread_id = get_native_id()
+        if thread_id not in Callbacks.thread_ids_to_unhook_NtAllocateVirtualMemory:
+            return return_value
+
+        rehook_IAT("ntdll.dll", "NtAllocateVirtualMemory", "KERNELBASE.dll")
+        rehook_EAT("ntdll.dll", "NtAllocateVirtualMemory")
+        Callbacks.thread_ids_to_unhook_NtAllocateVirtualMemory.remove(
+            thread_id
+        )
+        return return_value
+
     def ntdll_NtCreateThreadEx_pre(
         type_: str,
         function: Union[Function, ImportFunction],
@@ -338,23 +382,9 @@ class Callbacks:
         execution to change the start address to initialize the new stack.
         """
 
-        arguments = (
-            arguments[0],
-            arguments[1],
-            arguments[2],
-            arguments[3],
-            get_thread_hook(arguments[4]),
-            arguments[5],
-            arguments[6],
-            arguments[7],
-            arguments[8],
-            arguments[9],
-            arguments[10],
-        )
-
         callback_print(
-            "               ",
-            "call  ",
+            " " * (4 * CallbackManager.indent - 1),
+            "original call  ",
             function.module_name,
             function.name + ":",
             *(
@@ -371,7 +401,95 @@ class Callbacks:
             ),
         )
 
+        arguments = (
+            arguments[0],
+            arguments[1],
+            arguments[2],
+            arguments[3],
+            get_thread_hook(arguments[4]),
+            arguments[5],
+            arguments[6],
+            arguments[7],
+            arguments[8],
+            arguments[9],
+            arguments[10],
+        )
+
+        callback_print(
+            " " * (4 * CallbackManager.indent - 1),
+            "modified call  ",
+            function.module_name,
+            function.name + ":",
+            *(
+                [
+                    (
+                        f"{x} = {arguments[i]} ({arguments[i]:x})"
+                        if isinstance(arguments[i], int)
+                        else f"{x} = {arguments[i]}"
+                    )
+                    for i, x in enumerate(function.arguments)
+                ]
+                if function.arguments
+                else []
+            ),
+        )
+
+        unhook_IAT("ntdll.dll", "NtAllocateVirtualMemory", "KERNELBASE.dll")
+        unhook_IAT("ntdll.dll", "NtQueryVirtualMemory", "KERNELBASE.dll")
+        unhook_IAT("KERNELBASE.DLL", "VirtualAlloc", "KERNEL32.DLL")
+
         return arguments
+
+    def ntdll_NtCreateThread_post(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function rebuild the hook for ntdll.dll NtAllocateVirtualMemory
+        in KERNELBASE.dll IAT and ntdll.dll EAT.
+        """
+
+        rehook_IAT("ntdll.dll", "NtAllocateVirtualMemory", "KERNELBASE.dll")
+        rehook_IAT("ntdll.dll", "NtQueryVirtualMemory", "KERNELBASE.dll")
+        rehook_IAT("KERNELBASE.DLL", "VirtualAlloc", "KERNEL32.DLL")
+
+        thread_handle = cast(POINTER(HANDLE), arguments[0]).contents.value
+        thread_id = GetThreadId(thread_handle)
+        Callbacks.thread_ids_to_unhook_NtAllocateVirtualMemory.add(thread_id)
+        return return_value
+
+    def shell32_ShellExecuteA_pre(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+    ) -> Tuple:
+        """
+        This function is a callback executed before the NtCreateThreadEx
+        execution to change the start address to initialize the new stack.
+        """
+
+        unhook_IAT("ntdll.dll", "LdrLoadDll", "KERNELBASE.dll")
+        unhook_IAT("ntdll.dll", "LdrLoadDll", "KERNEL32.DLL")
+        unhook_EAT("ntdll.dll", "LdrLoadDll")
+        return arguments
+
+    def shell32_ShellExecuteA_post(
+        type_: str,
+        function: Union[Function, ImportFunction],
+        arguments: Tuple,
+        return_value: c_void_p,
+    ) -> c_void_p:
+        """
+        This function rebuild the hook for ntdll.dll NtAllocateVirtualMemory
+        in KERNELBASE.dll IAT and ntdll.dll EAT.
+        """
+
+        rehook_IAT("ntdll.dll", "LdrLoadDll", "KERNELBASE.dll")
+        rehook_IAT("ntdll.dll", "LdrLoadDll", "KERNEL32.DLL")
+        rehook_EAT("ntdll.dll", "LdrLoadDll")
+        return return_value
 
     def ntdll_NtCreateThread_pre(
         type_: str,
@@ -412,6 +530,7 @@ class Callbacks:
         """
 
         breakpoint()
+        return return_value
 
     def kernelbase_GetWindowsDirectoryW(
         type_: str,
@@ -503,7 +622,7 @@ class Callbacks:
         print(
             " " * (4 * (CallbackManager.indent + 1)),
             "ApiSetQueryApiSetPresence: [IN] Namespace =",
-            repr(unicode_string.Buffer) + ",",
+            repr(namespace.Buffer) + ",",
             "[OUT] Present =",
             str(present) + ',',
             '[OUT] Return =',
@@ -559,8 +678,15 @@ class Callbacks:
 
         if module_handle not in modules:
             imports = []
-            hooks_DLL(module, Hooks.export_hooks, imports)
+            exports, forwarded = hooks_DLL(module, Hooks.export_hooks, imports)
+            for function in imports:
+                hooks = Hooks.ordinal_hooks if isinstance(function.name, int) else Hooks.name_hooks
+                export_function = hooks.get(function.module_name + "|" + str(function.name))
+                if export_function:
+                    function.address = export_function.address
             hooks_IAT(imports, False)
+            write_EAT_hooks(exports)
+            hooks_forwarded(forwarded)
 
         print(
             " " * (4 * (CallbackManager.indent + 1)),
@@ -600,6 +726,7 @@ class Callbacks:
                 func.rva,
                 func.export_address,
                 func.index,
+                func.ordinal,
             )
             build_generic_callback("GetProcAddress", proc)
             Hooks.get_proc_address_hooks[identifier] = proc
@@ -611,18 +738,7 @@ class Callbacks:
             f", Function = {function_name}, HookAddress = {hex(proc_pointer)}"
         )
 
-        logger.info(
-            "Hook "
-            + proc.module_name
-            + " "
-            + proc.name
-            + " "
-            + hex(proc.address)
-            + " "
-            + hex(proc_pointer)
-            + " "
-            + hex(proc.rva)
-        )
+        logger.info("Hook " + proc.module_name + " " + proc.name)
 
         return proc_pointer
 
@@ -636,16 +752,16 @@ class Callbacks:
         This function defines interactive actions on callback.
         """
 
-        # answer = None
-        # while answer not in ("b", "c", "e"):
-        #     answer = input(
-        #         "Enter [b] for breakpoint, [c] to continue and [e] to exit: "
-        #     )
+        answer = None
+        while answer not in ("b", "c", "e"):
+            answer = input(
+                "Enter [b] for breakpoint, [c] to continue and [e] to exit: "
+            )
 
-        # if answer == "b":
-        #     breakpoint()
-        # elif answer == "e":
-        #     exit(1)
+        if answer == "b":
+            breakpoint()
+        elif answer == "e":
+            exit(1)
 
         return return_value
 
@@ -690,9 +806,68 @@ class Hooks:
     export_hooks: Dict[str, Function] = {}
     import_hooks: Dict[str, ImportFunction] = {}
     name_hooks: Dict[str, Function] = {}
+    ordinal_hooks: Dict[str, Function] = {}
     types: Dict[str, CFUNCTYPE] = {}
     threads_stack_alloc: Dict[int, int] = {}
+    start_hooking: bool = False
 
+
+def rehook_IAT(module_name: str, function_name: str, imported_by: str) -> None:
+    '''
+    This function re-hooks a specific IAT function (hook after unhooking).
+    '''
+
+    function = Hooks.import_hooks[
+        str(addressof(
+            modules[module_name.upper().encode()].modBaseAddr.contents
+        )) + f"|{function_name}|{imported_by.upper()}"
+    ]
+    write_in_memory(
+        function.import_address,
+        cast(function.hook, c_void_p).value.to_bytes(sizeof(c_void_p), byteorder="little"),
+    )
+
+def rehook_EAT(module_name: str, function_name: str) -> None:
+    '''
+    This function re-hooks a specific EAT function (hook after unhooking).
+    '''
+
+    function = Hooks.name_hooks[
+        module_name.upper() + "|" + function_name
+    ]
+    write_in_memory(
+        function.export_address,
+        function.hook_rva.to_bytes(4, byteorder="little"),
+    )
+
+def unhook_IAT(module_name: str, function_name: str, imported_by: str) -> None:
+    '''
+    This function unhooks a specific IAT function.
+    '''
+
+    function = Hooks.import_hooks[
+        str(addressof(
+            modules[module_name.upper().encode()].modBaseAddr.contents
+        )) +
+        f"|{function_name}|{imported_by.upper()}"
+    ]
+    write_in_memory(
+        function.import_address,
+        function.address.to_bytes(sizeof(c_void_p), byteorder="little"),
+    )
+
+def unhook_EAT(module_name: str, function_name: str) -> None:
+    '''
+    This function unhooks a specific EAT function.
+    '''
+
+    function = Hooks.name_hooks[
+        module_name.upper() + "|" + function_name
+    ]
+    write_in_memory(
+        function.export_address,
+        function.rva.to_bytes(4, byteorder="little"),
+    )
 
 def resolve_type(module_type: str) -> type:
     """
@@ -769,6 +944,10 @@ LoadLibraryW.restype = HMODULE
 GetProcAddress = kernel32.GetProcAddress
 GetProcAddress.argtypes = [HMODULE, c_char_p]
 GetProcAddress.restype = c_void_p
+
+GetThreadId = kernel32.GetThreadId
+GetModuleHandleW.argtypes = [HANDLE]
+GetModuleHandleW.restype = DWORD
 
 modules: Dict[Union[int, str], MODULEENTRY32] = {}
 
@@ -892,7 +1071,7 @@ def callback_return_printer(
         function.name + ":",
         (
             (str(return_value) + " (" + hex(return_value) + ")")
-            if return_value is not None and not isinstance(return_value, str)
+            if return_value is not None and not isinstance(return_value, (str, bytes))
             else str(return_value)
         ),
     )
@@ -1049,10 +1228,8 @@ def build_stack_debug_shellcode(printf_addr: int) -> bytes:
       - Computes RBP - RSP (used stack in current function)
       - Calls printf("Stack used: 0x%llx\n", <usage>)
     """
-
-    # format string: "Stack used: 0x%llx\n\0"
-    fmt = b"Stack used: 0x%llx\n\0"
     shellcode = b""
+    fmt = b"Stack used: 0x%llx 0x%llx\n\0"
 
     # sub rsp, 0x28  ; align + shadow space (Win x64 ABI)
     shellcode += b"\x48\x83\xEC\x28"
@@ -1083,9 +1260,10 @@ def build_stack_debug_shellcode(printf_addr: int) -> bytes:
     # add rsp, 0x28
     shellcode += b"\x48\x83\xC4\x28"
 
-    # jump [rip + XX]    ; jump after format string
-    shellcode += b"\xE9" + len(fmt).to_bytes(4, 'little')
+    # jump [rip + XX]  ; jump after format string
+    shellcode += b'\xE9' + len(fmt).to_bytes(4, 'little')
 
+    # format string: "Stack used: 0x%llx\n\0"
     offset = len(shellcode)
     shellcode += fmt
 
@@ -1145,7 +1323,7 @@ def executable_instructions(instructions: bytes) -> int:
     return allocated_memory
 
 
-def get_thread_hook(start_address: int):
+def get_thread_hook(start_address: int) -> int:
     '''
     This function returns the thread hooks for a specific starting point.
     '''
@@ -1159,6 +1337,13 @@ def get_thread_hook(start_address: int):
         Hooks.threads_stack_alloc[thread_hook] = start_address
 
     return thread_hook
+
+def read_memory(address: int, size: int) -> bytes:
+    """
+    This function reads in memory.
+    """
+
+    return bytes((c_byte * size).from_address(address))
 
 def write_in_memory(address: int, data: bytes) -> None:
     """
@@ -1229,9 +1414,6 @@ def hook_function(function: Function) -> None:
 
     logger.info("Hook " + function.module_name + " " + function.name)
     module_base = addressof(function.module.modBaseAddr.contents)
-    real_value = cast(
-        function.export_address, POINTER(c_uint32)
-    ).contents.value
 
     if (
         hook_jump_address := Hooks.reserved_hooks_space.get(
@@ -1250,35 +1432,11 @@ def hook_function(function: Function) -> None:
     jump_instructions = generate_absolute_jump(hook_pointer)
 
     hook_jump_address += 12 * function.index
-    hook_rva = hook_jump_address - module_base
+    function.hook_rva = hook_jump_address - module_base
 
-    write_in_memory(
-        function.export_address, hook_rva.to_bytes(4, byteorder="little")
-    )
     write_in_memory(hook_jump_address, jump_instructions)
-    hook_value = cast(
-        function.export_address, POINTER(c_uint32)
-    ).contents.value
-    resolved_address = kernel32.GetProcAddress(
-        module_base, function.name.encode()
-    )
 
-    logger.info(
-        "Hook "
-        + function.module_name
-        + " "
-        + function.name
-        + " "
-        + hex(real_value)
-        + " "
-        + hex(hook_value)
-        + " "
-        + hex(hook_rva)
-        + " "
-        + hex(hook_jump_address)
-        + " "
-        + hex(resolved_address)
-    )
+    logger.info("Hook " + function.module_name + " " + function.name)
 
 
 def rva_to_addr(base: int, rva: int) -> POINTER:
@@ -1355,6 +1513,22 @@ def get_PeHeaders(
     )
 
 
+def bypass_edr_hook(module: MODULEENTRY32, optional_header: Union[IMAGE_OPTIONAL_HEADER64, IMAGE_OPTIONAL_HEADER32]) -> int:
+    '''
+    Little function to bypass stupid EDR hooks.
+    '''
+
+    if module.szModule == b'ntdll.dll':
+        Hooks.start_hooking = True
+
+    if module.export_directory.AddressOfNames > optional_header.SizeOfImage:
+        print("Hook on address name (probably cause of EDR)", file=stderr)
+        if module.szModule == b'KERNEL32.DLL':
+            module.export_directory = modules[list(modules.keys())[(2 * 3) - 1]].export_directory
+        elif module.szModule == b'ntdll.dll':
+            module.export_directory = modules[list(modules.keys())[(2 * 3) - 1]].export_directory
+    return module.export_directory
+
 def list_exports(
     module: MODULEENTRY32,
     module_base: int,
@@ -1369,17 +1543,18 @@ def list_exports(
     export_directory = optional_header.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_EXPORT
     ]
-    module.export_directory_rva = export_dirrectory_rva = (
+    module.export_directory_rva = export_directory_rva = (
         export_directory.VirtualAddress
     )
     module.export_directory_size = export_directory.Size
 
-    if export_dirrectory_rva == 0:
+    if export_directory_rva == 0:
         return None
 
-    module.export_directory = export_directory = rva_to_struct(
-        module_base, export_dirrectory_rva, IMAGE_EXPORT_DIRECTORY
+    module.export_directory = rva_to_struct(
+        module_base, export_directory_rva, IMAGE_EXPORT_DIRECTORY
     )
+    export_directory = bypass_edr_hook(module, optional_header)
 
     base_export_functions_addresses = (
         module_base + export_directory.AddressOfFunctions
@@ -1397,6 +1572,9 @@ def list_exports(
         POINTER(c_uint16 * export_directory.NumberOfNames),
     ).contents
 
+    if not Hooks.start_hooking:
+        return None
+
     for i in range(export_directory.NumberOfNames):
         name_rva = addresses_of_names[i]
         ordinal = addresses_of_ordinals[i]
@@ -1413,6 +1591,7 @@ def list_exports(
             function_rva,
             base_export_functions_addresses + ordinal * 4,
             i,
+            ordinal,
         )
 
 
@@ -1460,11 +1639,12 @@ def hooks_DLL(
         )
     )
     forwarded_functions = []
+    exported_functions = []
 
     new_module = MODULEENTRY32()
     memmove(byref(new_module), byref(module), sizeof(MODULEENTRY32))
     modules[base_address] = new_module
-    modules[new_module.szModule] = new_module
+    modules[new_module.szModule.upper()] = new_module
 
     for function in list_exports(new_module, *headers):
         if (
@@ -1483,8 +1663,9 @@ def hooks_DLL(
         # if function.rva != cast(function.export_address, POINTER(c_uint32)).contents.value:
         #     print(function)
         hook_function(function)
+        exported_functions.append(function)
 
-    return forwarded_functions
+    return exported_functions, forwarded_functions
 
 
 def resolve_ordinal(module: MODULEENTRY32, ordinal: int) -> int:
@@ -1513,7 +1694,8 @@ def resolve_module_by_address(
 
     for module in list_modules():
         if base_address == addressof(module.modBaseAddr.contents):
-            hooks_forwarded(hooks_DLL(module, hooks, imports), hooks, imports)
+            _, forwarded = hooks_DLL(module, hooks, imports)
+            hooks_forwarded(forwarded, hooks, imports)
             return modules[base_address]
 
 
@@ -1539,7 +1721,13 @@ def hooks_forwarded(
         if base_address is not None:
             module = resolve_module_by_address(base_address, hooks, imports)
         if function_name[0] == "#":
-            function.address = resolve_ordinal(module, int(function_name[1:]))
+            if module is None:
+                address = GetProcAddress(addressof(function.module.modBaseAddr.contents), function.name.encode())
+                if address is None:
+                    continue
+                function.address = address
+            else:
+                function.address = resolve_ordinal(module, int(function_name[1:]))
         else:
             target_function = hooks.get(
                 str(base_address) + "|" + function_name
@@ -1555,6 +1743,7 @@ def hooks_forwarded(
             else:
                 function.address = target_function.address
 
+        # Hooks.ordinal_hooks[function.module_name.upper() + "|" + str(function.ordinal)] = function
         Hooks.name_hooks[
             function.module_name.upper() + "|" + function.name
         ] = function
@@ -1573,6 +1762,17 @@ def hooks_forwarded(
         hooks_forwarded(functions_copy, hooks, imports, len(functions_copy))
 
 
+def write_EAT_hooks(functions: Iterable[Function]) -> None:
+    """
+    This function hooks EAT functions.
+    """
+
+    for function in functions:
+        write_in_memory(
+            function.export_address,
+            function.hook_rva.to_bytes(4, byteorder="little"),
+        )
+
 def hooks_DLLs() -> Dict[str, Function]:
     """
     This function hooks all loaded modules (imported DLLs):
@@ -1585,7 +1785,10 @@ def hooks_DLLs() -> Dict[str, Function]:
     forwarded = []
 
     for module in list_modules():
-        forwarded.extend(hooks_DLL(module, functions, imports))
+        _, temp_forwarded = hooks_DLL(module, functions, imports)
+        forwarded.extend(temp_forwarded)
+
+    write_EAT_hooks(Hooks.name_hooks.values())
 
     hooks_forwarded(forwarded, functions, imports)
     hooks_IAT(imports, False)
@@ -1617,8 +1820,9 @@ def hooks_IAT(
                 continue
 
         build_generic_callback("IAT", function)
+        import_by = function.module_container.upper()
         Hooks.import_hooks[
-            f"{function.module}|{function.name}|{function.module_container}"
+            f"{function.module}|{function.name}|{import_by}"
         ] = function
 
         hook_pointer = cast(function.hook, c_void_p).value

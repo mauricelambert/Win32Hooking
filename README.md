@@ -7,7 +7,9 @@
 This module hooks IAT and EAT to monitor all external functions calls,
 very useful for \[malware\] reverse and debugging.
 
-> This module should run in a virtual machine without any EDR because it hook all exported and imported functions. Hooks may be detected and EDR can kill the process and removes files. Another problem is some EDR injected API, hooking the EDR API can be a problem to run an executable and some API could not be resolved (for example SentinelOne `ntd1l.dll` and `kern3l32.dll`, used to detect very basic shellcode, cannot be resolved as standard library).
+> This module should run in a virtual machine without any EDR because it hook all exported and imported functions. Hooks may be detected and EDR can kill the process and removes files.
+> 
+> Some EDR inject DLL in the process and modify some elements to resolve functions by EAT, i wrote a little bypass to run it on a machine with a specific EDR. You can probably use it with an EDR but it's not recommended.
 
 ## Requirements
 
