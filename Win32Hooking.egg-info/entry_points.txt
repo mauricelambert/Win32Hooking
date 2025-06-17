@@ -1,2 +1,0 @@
-[console_scripts]
-Win32Hooking = Win32Hooking:main
