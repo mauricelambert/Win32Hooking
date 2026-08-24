@@ -25,7 +25,7 @@ This module hooks IAT and EAT to monitor all external functions calls,
 very useful for [malware] reverse and debugging.
 """
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
