@@ -2212,6 +2212,1367 @@
               {"name": "size", "type": "ctypes.c_size_t"}
             ],
             "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|__set_app_type": {
+            "arguments": [
+                {"name": "at", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|__getmainargs": {
+            "arguments": [
+                {"name": "argc", "type": "ctypes.c_void_p"},
+                {"name": "argv", "type": "ctypes.c_void_p"},
+                {"name": "env", "type": "ctypes.c_void_p"},
+                {"name": "doWildCard", "type": "ctypes.c_int"},
+                {"name": "startInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|memcpy": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "src", "type": "ctypes.c_void_p"},
+                {"name": "count", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|_initterm": {
+            "arguments": [
+                {"name": "start", "type": "ctypes.c_void_p"},
+                {"name": "end", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|atexit": {
+            "arguments": [
+                {"name": "func", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|strcpy": {
+            "arguments": [
+                {"name": "strDestination", "type": "ctypes.c_void_p"},
+                {"name": "strSource", "type": "ctypes.c_char_p"}
+            ],
+            "return_value": "ctypes.c_char_p"
+        },
+                "NTDLL.DLL|NtOpenKey": {
+            "arguments": [
+                {"name": "KeyHandle", "type": "ctypes.c_void_p"},
+                {"name": "DesiredAccess", "type": "ctypes.c_uint32"},
+                {"name": "ObjectAttributes", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "KERNELBASE.DLL|_initterm_e": {
+            "arguments": [
+                {"name": "start", "type": "ctypes.c_void_p"},
+                {"name": "end", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNELBASE.DLL|__dllonexit3": {
+            "arguments": [
+                {"name": "function", "type": "ctypes.c_void_p"},
+                {"name": "cookie", "type": "ctypes.c_void_p"},
+                {"name": "context", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNELBASE.DLL|DisableThreadLibraryCalls": {
+            "arguments": [
+                {"name": "hLibModule", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|GetSystemInfo": {
+            "arguments": [
+                {"name": "lpSystemInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlInitializeCriticalSection": {
+            "arguments": [
+                {"name": "CriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|RtlGetNtProductType": {
+            "arguments": [
+                {"name": "NtProductType", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "NTDLL.DLL|RtlInitializeResource": {
+            "arguments": [
+                {"name": "Resource", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlAcquireResourceExclusive": {
+            "arguments": [
+                {"name": "Resource", "type": "ctypes.c_void_p"},
+                {"name": "Wait", "type": "ctypes.c_bool"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlReleaseResource": {
+            "arguments": [
+                {"name": "Resource", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlInitUnicodeString": {
+            "arguments": [
+                {"name": "DestinationString", "type": "ctypes.c_void_p"},
+                {"name": "SourceString", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|GetComputerNameA": {
+            "arguments": [
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "nSize", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "NTDLL.DLL|NtOpenEvent": {
+            "arguments": [
+                {"name": "EventHandle", "type": "ctypes.c_void_p"},
+                {"name": "DesiredAccess", "type": "ctypes.c_uint32"},
+                {"name": "ObjectAttributes", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|NtQueryEvent": {
+            "arguments": [
+                {"name": "EventHandle", "type": "ctypes.c_void_p"},
+                {"name": "EventInformationClass", "type": "ctypes.c_int32"},
+                {"name": "EventInformation", "type": "ctypes.c_void_p"},
+                {"name": "EventInformationLength", "type": "ctypes.c_uint32"},
+                {"name": "ReturnLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|NtClose": {
+            "arguments": [
+                {"name": "Handle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "KERNEL32.DLL|GlobalMemoryStatusEx": {
+            "arguments": [
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|QueryPerformanceFrequency": {
+            "arguments": [
+                {"name": "lpFrequency", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "MSVCRT.DLL|calloc": {
+            "arguments": [
+                {"name": "num", "type": "ctypes.c_size_t"},
+                {"name": "size", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|_unlock": {
+            "arguments": [
+                {"name": "locknum", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "RPCRT4.DLL|RpcStringBindingComposeW": {
+            "arguments": [
+                {"name": "ObjUuid", "type": "ctypes.c_void_p"},
+                {"name": "Protseq", "type": "ctypes.c_void_p"},
+                {"name": "NetworkAddr", "type": "ctypes.c_void_p"},
+                {"name": "Endpoint", "type": "ctypes.c_void_p"},
+                {"name": "Options", "type": "ctypes.c_void_p"},
+                {"name": "StringBinding", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "RPCRT4.DLL|RpcBindingFromStringBindingW": {
+            "arguments": [
+                {"name": "StringBinding", "type": "ctypes.c_void_p"},
+                {"name": "Binding", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "RPCRT4.DLL|RpcStringFreeW": {
+            "arguments": [
+                {"name": "String", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "RPCRT4.DLL|NdrClientCall3": {
+            "arguments": [
+                {"name": "pStubDescriptor", "type": "ctypes.c_void_p"},
+                {"name": "pFormat", "type": "ctypes.c_void_p"},
+                {"name": "pReturnValue", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "RPCRT4.DLL|RpcBindingUnbind": {
+            "arguments": [
+                {"name": "Binding", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "RPCRT4.DLL|RpcBindingFree": {
+            "arguments": [
+                {"name": "Binding", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|RtlLeaveCriticalSection": {
+            "arguments": [
+                {"name": "CriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|NtQueryInformationThread": {
+            "arguments": [
+                {"name": "ThreadHandle", "type": "ctypes.c_void_p"},
+                {"name": "ThreadInformationClass", "type": "ctypes.c_int32"},
+                {"name": "ThreadInformation", "type": "ctypes.c_void_p"},
+                {"name": "ThreadInformationLength", "type": "ctypes.c_uint32"},
+                {"name": "ReturnLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|RtlCopyUnicodeString": {
+            "arguments": [
+                {"name": "DestinationString", "type": "ctypes.c_void_p"},
+                {"name": "SourceString", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|LocalFree": {
+            "arguments": [
+                {"name": "hMem", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlUnicodeStringToAnsiString": {
+            "arguments": [
+                {"name": "DestinationString", "type": "ctypes.c_void_p"},
+                {"name": "SourceString", "type": "ctypes.c_void_p"},
+                {"name": "AllocateDestinationString", "type": "ctypes.c_bool"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "NTDLL.DLL|RtlFreeHeap": {
+            "arguments": [
+                {"name": "HeapHandle", "type": "ctypes.c_void_p"},
+                {"name": "Flags", "type": "ctypes.c_uint32"},
+                {"name": "BaseAddress", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "MSVCRT.DLL|_lock": {
+            "arguments": [
+                {"name": "locknum", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|free": {
+            "arguments": [
+                {"name": "memblock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "WS2_32.DLL|WSAStartup": {
+            "arguments": [
+                {"name": "wVersionRequested", "type": "ctypes.c_uint16"},
+                {"name": "lpWSAData", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNEL32.DLL|TlsGetValue": {
+            "arguments": [
+                {"name": "dwTlsIndex", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|NtCreateEvent": {
+            "arguments": [
+                {"name": "EventHandle", "type": "ctypes.c_void_p"},
+                {"name": "DesiredAccess", "type": "ctypes.c_uint32"},
+                {"name": "ObjectAttributes", "type": "ctypes.c_void_p"},
+                {"name": "EventType", "type": "ctypes.c_int32"},
+                {"name": "InitialState", "type": "ctypes.c_bool"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "KERNEL32.DLL|TlsSetValue": {
+            "arguments": [
+                {"name": "dwTlsIndex", "type": "ctypes.c_uint32"},
+                {"name": "lpTlsValue", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "WS2_32.DLL|WahCreateHandleContextTable": {
+            "arguments": [
+                {"name": "Table", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNELBASE.DLL|GetModuleHandleExA": {
+            "arguments": [
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpModuleName", "type": "ctypes.c_void_p"},
+                {"name": "phModule", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|OpenProcessToken": {
+            "arguments": [
+                {"name": "ProcessHandle", "type": "ctypes.c_void_p"},
+                {"name": "DesiredAccess", "type": "ctypes.c_uint32"},
+                {"name": "TokenHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|GetTokenInformation": {
+            "arguments": [
+                {"name": "TokenHandle", "type": "ctypes.c_void_p"},
+                {"name": "TokenInformationClass", "type": "ctypes.c_int32"},
+                {"name": "TokenInformation", "type": "ctypes.c_void_p"},
+                {"name": "TokenInformationLength", "type": "ctypes.c_uint32"},
+                {"name": "ReturnLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|CloseHandle": {
+            "arguments": [
+                {"name": "hObject", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "WS2_32.DLL|WahInsertHandleContext": {
+            "arguments": [
+                {"name": "Table", "type": "ctypes.c_void_p"},
+                {"name": "Handle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "WS2_32.DLL|socket": {
+            "arguments": [
+                {"name": "af", "type": "ctypes.c_int"},
+                {"name": "type", "type": "ctypes.c_int"},
+                {"name": "protocol", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "WS2_32.DLL|htons": {
+            "arguments": [
+                {"name": "hostshort", "type": "ctypes.c_uint16"}
+            ],
+            "return_value": "ctypes.c_uint16"
+        },
+        "WS2_32.DLL|WahReferenceContextByHandle": {
+            "arguments": [
+                {"name": "Table", "type": "ctypes.c_void_p"},
+                {"name": "Handle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "WS2_32.DLL|ntohs": {
+            "arguments": [
+                {"name": "netshort", "type": "ctypes.c_uint16"}
+            ],
+            "return_value": "ctypes.c_uint16"
+        },
+        "NTDLL.DLL|NtWaitForSingleObject": {
+            "arguments": [
+                {"name": "Handle", "type": "ctypes.c_void_p"},
+                {"name": "Alertable", "type": "ctypes.c_bool"},
+                {"name": "Timeout", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "WS2_32.DLL|sendto": {
+            "arguments": [
+                {"name": "s", "type": "ctypes.c_void_p"},
+                {"name": "buf", "type": "ctypes.c_void_p"},
+                {"name": "len", "type": "ctypes.c_int"},
+                {"name": "flags", "type": "ctypes.c_int"},
+                {"name": "to", "type": "ctypes.c_void_p"},
+                {"name": "tolen", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "WS2_32.DLL|WahRemoveHandleContext": {
+            "arguments": [
+                {"name": "Table", "type": "ctypes.c_void_p"},
+                {"name": "Handle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|NtClose": {
+            "arguments": [
+                {"name": "Handle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "WS2_32.DLL|closesocket": {
+            "arguments": [
+                {"name": "s", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "WS2_32.DLL|WSACleanup": {
+            "arguments": [],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_errno": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|strcmp": {
+            "arguments": [
+                {"name": "string1", "type": "ctypes.c_char_p"},
+                {"name": "string2", "type": "ctypes.c_char_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNELBASE.DLL|_initterm": {
+            "arguments": [
+                {"name": "start", "type": "ctypes.c_void_p"},
+                {"name": "end", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlEnterCriticalSection": {
+            "arguments": [
+                {"name": "CriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "KERNELBASE.DLL|LoadLibraryExW": {
+            "arguments": [
+                {"name": "lpLibFileName", "type": "ctypes.c_void_p"},
+                {"name": "hFile", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "ADVAPI32.DLL|GetUserNameA": {
+            "arguments": [
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "pcbBuffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|GetSystemInfo": {
+            "arguments": [
+                {"name": "lpSystemInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlDeleteCriticalSection": {
+            "arguments": [
+                {"name": "CriticalSection", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "MSVCRT.DLL|strrchr": {
+            "arguments": [
+                {"name": "string", "type": "ctypes.c_char_p"},
+                {"name": "character", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_char_p"
+        },
+        "MSVCRT.DLL|_stricmp": {
+            "arguments": [
+                {"name": "string1", "type": "ctypes.c_char_p"},
+                {"name": "string2", "type": "ctypes.c_char_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "NTDLL.DLL|RtlNtStatusToDosError": {
+            "arguments": [
+                {"name": "Status", "type": "ctypes.c_int32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|RtlSetLastWin32Error": {
+            "arguments": [
+                {"name": "Win32Error", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|GetCurrentProcess": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|__wgetmainargs": {
+            "arguments": [
+                {"name": "argc", "type": "ctypes.c_void_p"},
+                {"name": "argv", "type": "ctypes.c_void_p"},
+                {"name": "env", "type": "ctypes.c_void_p"},
+                {"name": "doWildCard", "type": "ctypes.c_int"},
+                {"name": "startInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|setlocale": {
+            "arguments": [
+                {"name": "category", "type": "ctypes.c_int"},
+                {"name": "locale", "type": "ctypes.c_char_p"}
+            ],
+            "return_value": "ctypes.c_char_p"
+        },
+        "MSVCRT.DLL|__iob_func": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|_fileno": {
+            "arguments": [
+                {"name": "stream", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_get_osfhandle": {
+            "arguments": [
+                {"name": "fd", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlAcquireSRWLockExclusive": {
+            "arguments": [
+                {"name": "SRWLock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|EtwEventUnregister": {
+            "arguments": [
+                {"name": "RegHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|RtlReleaseSRWLockExclusive": {
+            "arguments": [
+                {"name": "SRWLock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|TpSetTimer": {
+            "arguments": [
+                {"name": "Timer", "type": "ctypes.c_void_p"},
+                {"name": "Callback", "type": "ctypes.c_void_p"},
+                {"name": "Context", "type": "ctypes.c_void_p"},
+                {"name": "TimerSet", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|TpWaitForTimer": {
+            "arguments": [
+                {"name": "Timer", "type": "ctypes.c_void_p"},
+                {"name": "CancelPendingCallbacks", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|TpReleaseTimer": {
+            "arguments": [
+                {"name": "Timer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCP_WIN.DLL|_Mtx_destroy_in_situ": {
+            "arguments": [
+                {"name": "mtx", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlDllShutdownInProgress": {
+            "arguments": [],
+            "return_value": "ctypes.c_int"
+        },
+        "UCRTBASE.DLL|_o__execute_onexit_table": {
+            "arguments": [
+                {"name": "table", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "UCRTBASE.DLL|_o___std_type_info_destroy_list": {
+            "arguments": [
+                {"name": "list", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|EtwUnregisterTraceGuids": {
+            "arguments": [
+                {"name": "RegistrationHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "COMBASE.DLL|CleanupOleStateInAllTls": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|NtQueryWnfStateData": {
+            "arguments": [
+                {"name": "StateName", "type": "ctypes.c_void_p"},
+                {"name": "TypeId", "type": "ctypes.c_void_p"},
+                {"name": "ExplicitScope", "type": "ctypes.c_void_p"},
+                {"name": "ChangeStamp", "type": "ctypes.c_void_p"},
+                {"name": "Buffer", "type": "ctypes.c_void_p"},
+                {"name": "BufferLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "API-MS-WIN-CORE-SYSINFO-L1-1-0.DLL|GetSystemTimeAsFileTime": {
+            "arguments": [
+                {"name": "lpSystemTimeAsFileTime", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|GetCurrentProcessId": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|GetCurrentThreadId": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-SYSINFO-L1-1-0.DLL|GetTickCount": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNEL32.DLL|GetTickCount": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROFILE-L1-1-0.DLL|QueryPerformanceCounter": {
+            "arguments": [
+                {"name": "lpPerformanceCount", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-LIBRARYLOADER-L1-2-0.DLL|GetModuleHandleW": {
+            "arguments": [
+                {"name": "lpModuleName", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNEL32.DLL|GetModuleHandleW": {
+            "arguments": [
+                {"name": "lpModuleName", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-ERRORHANDLING-L1-1-0.DLL|SetUnhandledExceptionFilter": {
+            "arguments": [
+                {"name": "lpTopLevelExceptionFilter", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-HEAP-L1-1-0.DLL|HeapSetInformation": {
+            "arguments": [
+                {"name": "HeapHandle", "type": "ctypes.c_void_p"},
+                {"name": "HeapInformationClass", "type": "ctypes.c_int"},
+                {"name": "HeapInformation", "type": "ctypes.c_void_p"},
+                {"name": "HeapInformationLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|HeapSetInformation": {
+            "arguments": [
+                {"name": "HeapHandle", "type": "ctypes.c_void_p"},
+                {"name": "HeapInformationClass", "type": "ctypes.c_int"},
+                {"name": "HeapInformation", "type": "ctypes.c_void_p"},
+                {"name": "HeapInformationLength", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-LOCALIZATION-L1-2-0.DLL|SetThreadUILanguage": {
+            "arguments": [
+                {"name": "LangId", "type": "ctypes.c_uint16"}
+            ],
+            "return_value": "ctypes.c_uint16"
+        },
+        "KERNEL32.DLL|SetThreadUILanguage": {
+            "arguments": [
+                {"name": "LangId", "type": "ctypes.c_uint16"}
+            ],
+            "return_value": "ctypes.c_uint16"
+        },
+        "API-MS-WIN-CORE-FILE-L1-1-0.DLL|GetFileType": {
+            "arguments": [
+                {"name": "hFile", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-CONSOLE-L1-1-0.DLL|GetConsoleMode": {
+            "arguments": [
+                {"name": "hConsoleHandle", "type": "ctypes.c_void_p"},
+                {"name": "lpMode", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-LOCALIZATION-L1-2-0.DLL|FormatMessageW": {
+            "arguments": [
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpSource", "type": "ctypes.c_void_p"},
+                {"name": "dwMessageId", "type": "ctypes.c_uint32"},
+                {"name": "dwLanguageId", "type": "ctypes.c_uint32"},
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "nSize", "type": "ctypes.c_uint32"},
+                {"name": "Arguments", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-CONSOLE-L1-1-0.DLL|GetConsoleOutputCP": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-LOCALIZATION-L1-2-0.DLL|GetCPInfo": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint32"},
+                {"name": "lpCPInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "MSVCRT.DLL|sprintf_s": {
+            "arguments": [
+                {"name": "buffer", "type": "ctypes.c_void_p"},
+                {"name": "sizeOfBuffer", "type": "ctypes.c_size_t"},
+                {"name": "format", "type": "ctypes.c_char_p"},
+                {"name": "args", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "API-MS-WIN-CORE-PROCESSENVIRONMENT-L1-1-0.DLL|GetStdHandle": {
+            "arguments": [
+                {"name": "nStdHandle", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-PROCESSENVIRONMENT-L1-1-0.DLL|GetCommandLineW": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-LIBRARYLOADER-L1-2-0.DLL|GetModuleFileNameW": {
+            "arguments": [
+                {"name": "hModule", "type": "ctypes.c_void_p"},
+                {"name": "lpFilename", "type": "ctypes.c_void_p"},
+                {"name": "nSize", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NETUTILS.DLL|NetApiBufferAllocate": {
+            "arguments": [
+                {"name": "ByteCount", "type": "ctypes.c_uint32"},
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "MSVCRT.DLL|_setmode": {
+            "arguments": [
+                {"name": "fd", "type": "ctypes.c_int"},
+                {"name": "mode", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_wcsicmp": {
+            "arguments": [
+                {"name": "string1", "type": "ctypes.c_void_p"},
+                {"name": "string2", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|memset": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "c", "type": "ctypes.c_int"},
+                {"name": "count", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|wcschr": {
+            "arguments": [
+                {"name": "string", "type": "ctypes.c_void_p"},
+                {"name": "character", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-SYSINFO-L1-1-0.DLL|GetSystemDirectoryW": {
+            "arguments": [
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "uSize", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "MSVCRT.DLL|wcscpy_s": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "numberOfElements", "type": "ctypes.c_size_t"},
+                {"name": "src", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|wcscat_s": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "numberOfElements", "type": "ctypes.c_size_t"},
+                {"name": "src", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "SECHOST.DLL|GetEmbeddedImageMitigationPolicy": {
+            "arguments": [
+                {"name": "imagePath", "type": "ctypes.c_void_p"},
+                {"name": "policy", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|RtlGetNtSystemRoot": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|GetTempPath2W": {
+            "arguments": [
+                {"name": "BufferLength", "type": "ctypes.c_uint32"},
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|CreateProcessW": {
+            "arguments": [
+                {"name": "lpApplicationName", "type": "ctypes.c_void_p"},
+                {"name": "lpCommandLine", "type": "ctypes.c_void_p"},
+                {"name": "lpProcessAttributes", "type": "ctypes.c_void_p"},
+                {"name": "lpThreadAttributes", "type": "ctypes.c_void_p"},
+                {"name": "bInheritHandles", "type": "ctypes.c_bool"},
+                {"name": "dwCreationFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpEnvironment", "type": "ctypes.c_void_p"},
+                {"name": "lpCurrentDirectory", "type": "ctypes.c_void_p"},
+                {"name": "lpStartupInfo", "type": "ctypes.c_void_p"},
+                {"name": "lpProcessInformation", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-HANDLE-L1-1-0.DLL|CloseHandle": {
+            "arguments": [
+                {"name": "hObject", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-SYNCH-L1-1-0.DLL|WaitForSingleObject": {
+            "arguments": [
+                {"name": "hHandle", "type": "ctypes.c_void_p"},
+                {"name": "dwMilliseconds", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|GetExitCodeProcess": {
+            "arguments": [
+                {"name": "hProcess", "type": "ctypes.c_void_p"},
+                {"name": "lpExitCode", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "NETUTILS.DLL|NetApiBufferFree": {
+            "arguments": [
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-CONSOLE-L1-1-0.DLL|GetConsoleOutputCP": {
+            "arguments": [],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-LOCALIZATION-L1-2-0.DLL|GetCPInfo": {
+            "arguments": [
+                {"name": "CodePage", "type": "ctypes.c_uint32"},
+                {"name": "lpCPInfo", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "MSVCRT.DLL|sprintf_s": {
+            "arguments": [
+                {"name": "buffer", "type": "ctypes.c_void_p"},
+                {"name": "sizeOfBuffer", "type": "ctypes.c_size_t"},
+                {"name": "format", "type": "ctypes.c_char_p"},
+                {"name": "args", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "API-MS-WIN-CORE-PROCESSENVIRONMENT-L1-1-0.DLL|GetStdHandle": {
+            "arguments": [
+                {"name": "nStdHandle", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-PROCESSENVIRONMENT-L1-1-0.DLL|GetCommandLineW": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-LIBRARYLOADER-L1-2-0.DLL|GetModuleFileNameW": {
+            "arguments": [
+                {"name": "hModule", "type": "ctypes.c_void_p"},
+                {"name": "lpFilename", "type": "ctypes.c_void_p"},
+                {"name": "nSize", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NETUTILS.DLL|NetApiBufferAllocate": {
+            "arguments": [
+                {"name": "ByteCount", "type": "ctypes.c_uint32"},
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "MSVCRT.DLL|_setmode": {
+            "arguments": [
+                {"name": "fd", "type": "ctypes.c_int"},
+                {"name": "mode", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_wcsicmp": {
+            "arguments": [
+                {"name": "string1", "type": "ctypes.c_void_p"},
+                {"name": "string2", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|memset": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "c", "type": "ctypes.c_int"},
+                {"name": "count", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "MSVCRT.DLL|wcschr": {
+            "arguments": [
+                {"name": "string", "type": "ctypes.c_void_p"},
+                {"name": "character", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "API-MS-WIN-CORE-SYSINFO-L1-1-0.DLL|GetSystemDirectoryW": {
+            "arguments": [
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "uSize", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "MSVCRT.DLL|wcscpy_s": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "numberOfElements", "type": "ctypes.c_size_t"},
+                {"name": "src", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|wcscat_s": {
+            "arguments": [
+                {"name": "dest", "type": "ctypes.c_void_p"},
+                {"name": "numberOfElements", "type": "ctypes.c_size_t"},
+                {"name": "src", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "SECHOST.DLL|GetEmbeddedImageMitigationPolicy": {
+            "arguments": [
+                {"name": "imagePath", "type": "ctypes.c_void_p"},
+                {"name": "policy", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|RtlGetNtSystemRoot": {
+            "arguments": [],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|GetTempPath2W": {
+            "arguments": [
+                {"name": "BufferLength", "type": "ctypes.c_uint32"},
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|CreateProcessW": {
+            "arguments": [
+                {"name": "lpApplicationName", "type": "ctypes.c_void_p"},
+                {"name": "lpCommandLine", "type": "ctypes.c_void_p"},
+                {"name": "lpProcessAttributes", "type": "ctypes.c_void_p"},
+                {"name": "lpThreadAttributes", "type": "ctypes.c_void_p"},
+                {"name": "bInheritHandles", "type": "ctypes.c_bool"},
+                {"name": "dwCreationFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpEnvironment", "type": "ctypes.c_void_p"},
+                {"name": "lpCurrentDirectory", "type": "ctypes.c_void_p"},
+                {"name": "lpStartupInfo", "type": "ctypes.c_void_p"},
+                {"name": "lpProcessInformation", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-HANDLE-L1-1-0.DLL|CloseHandle": {
+            "arguments": [
+                {"name": "hObject", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "API-MS-WIN-CORE-SYNCH-L1-1-0.DLL|WaitForSingleObject": {
+            "arguments": [
+                {"name": "hHandle", "type": "ctypes.c_void_p"},
+                {"name": "dwMilliseconds", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "API-MS-WIN-CORE-PROCESSTHREADS-L1-1-0.DLL|GetExitCodeProcess": {
+            "arguments": [
+                {"name": "hProcess", "type": "ctypes.c_void_p"},
+                {"name": "lpExitCode", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "NETUTILS.DLL|NetApiBufferFree": {
+            "arguments": [
+                {"name": "Buffer", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "MSVCRT.DLL|_onexit": {
+            "arguments": [
+                {"name": "function", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|VerSetConditionMask": {
+            "arguments": [
+                {"name": "ConditionMask", "type": "ctypes.c_uint64"},
+                {"name": "TypeMask", "type": "ctypes.c_uint32"},
+                {"name": "Condition", "type": "ctypes.c_uint8"}
+            ],
+            "return_value": "ctypes.c_uint64"
+        },
+        "NTDLL.DLL|RtlVerifyVersionInfo": {
+            "arguments": [
+                {"name": "VersionInfo", "type": "ctypes.c_void_p"},
+                {"name": "TypeMask", "type": "ctypes.c_uint32"},
+                {"name": "ConditionMask", "type": "ctypes.c_uint64"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "KERNEL32.DLL|lstrlenW": {
+            "arguments": [
+                {"name": "lpString", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_memicmp": {
+            "arguments": [
+                {"name": "buffer1", "type": "ctypes.c_void_p"},
+                {"name": "buffer2", "type": "ctypes.c_void_p"},
+                {"name": "count", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "VERSION.DLL|GetFileVersionInfoSizeExW": {
+            "arguments": [
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpwstrFilename", "type": "ctypes.c_void_p"},
+                {"name": "lpdwHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNEL32.DLL|SortGetHandle": {
+            "arguments": [
+                {"name": "Locale", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "VERSION.DLL|VerQueryValueW": {
+            "arguments": [
+                {"name": "pBlock", "type": "ctypes.c_void_p"},
+                {"name": "lpSubBlock", "type": "ctypes.c_void_p"},
+                {"name": "lplpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "puLen", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "VERSION.DLL|GetFileVersionInfoExW": {
+            "arguments": [
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpwstrFilename", "type": "ctypes.c_void_p"},
+                {"name": "dwHandle", "type": "ctypes.c_uint32"},
+                {"name": "dwLen", "type": "ctypes.c_uint32"},
+                {"name": "lpData", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|HeapValidate": {
+            "arguments": [
+                {"name": "hHeap", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpMem", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|HeapSize": {
+            "arguments": [
+                {"name": "hHeap", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpMem", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_size_t"
+        },
+        "KERNEL32.DLL|FormatMessageW": {
+            "arguments": [
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpSource", "type": "ctypes.c_void_p"},
+                {"name": "dwMessageId", "type": "ctypes.c_uint32"},
+                {"name": "dwLanguageId", "type": "ctypes.c_uint32"},
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "nSize", "type": "ctypes.c_uint32"},
+                {"name": "Arguments", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNEL32.DLL|LocalFree": {
+            "arguments": [
+                {"name": "hMem", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "USER32.DLL|LoadStringW": {
+            "arguments": [
+                {"name": "hInstance", "type": "ctypes.c_void_p"},
+                {"name": "uID", "type": "ctypes.c_uint32"},
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "cchBufferMax", "type": "ctypes.c_int"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "MSVCRT.DLL|_vsnwprintf": {
+            "arguments": [
+                {"name": "buffer", "type": "ctypes.c_void_p"},
+                {"name": "count", "type": "ctypes.c_size_t"},
+                {"name": "format", "type": "ctypes.c_void_p"},
+                {"name": "argptr", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNEL32.DLL|GetConsoleMode": {
+            "arguments": [
+                {"name": "hConsoleHandle", "type": "ctypes.c_void_p"},
+                {"name": "lpMode", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNEL32.DLL|WriteConsoleW": {
+            "arguments": [
+                {"name": "hConsoleOutput", "type": "ctypes.c_void_p"},
+                {"name": "lpBuffer", "type": "ctypes.c_void_p"},
+                {"name": "nNumberOfCharsToWrite", "type": "ctypes.c_uint32"},
+                {"name": "lpNumberOfCharsWritten", "type": "ctypes.c_void_p"},
+                {"name": "lpReserved", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|ResolveDelayLoadedAPI": {
+            "arguments": [
+                {"name": "ParentModuleBase", "type": "ctypes.c_void_p"},
+                {"name": "DelayloadDescriptor", "type": "ctypes.c_void_p"},
+                {"name": "FailureDllHook", "type": "ctypes.c_void_p"},
+                {"name": "FailureSystemHook", "type": "ctypes.c_void_p"},
+                {"name": "ThunkAddress", "type": "ctypes.c_void_p"},
+                {"name": "Flags", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "UCRTBASE.DLL|_o___stdio_common_vswprintf": {
+            "arguments": [
+                {"name": "options", "type": "ctypes.c_uint64"},
+                {"name": "buffer", "type": "ctypes.c_void_p"},
+                {"name": "buffer_count", "type": "ctypes.c_size_t"},
+                {"name": "format", "type": "ctypes.c_wchar_p"},
+                {"name": "locale", "type": "ctypes.c_void_p"},
+                {"name": "arglist", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "KERNELBASE.DLL|InitOnceBeginInitialize": {
+            "arguments": [
+                {"name": "lpInitOnce", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "fPending", "type": "ctypes.c_void_p"},
+                {"name": "lpContext", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "UCRTBASE.DLL|_o__register_onexit_function": {
+            "arguments": [
+                {"name": "table", "type": "ctypes.c_void_p"},
+                {"name": "function", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "NTDLL.DLL|EtwEventRegister": {
+            "arguments": [
+                {"name": "ProviderId", "type": "ctypes.c_void_p"},
+                {"name": "EnableCallback", "type": "ctypes.c_void_p"},
+                {"name": "CallbackContext", "type": "ctypes.c_void_p"},
+                {"name": "RegHandle", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "NTDLL.DLL|EtwEventSetInformation": {
+            "arguments": [
+                {"name": "RegHandle", "type": "ctypes.c_uint64"},
+                {"name": "InformationClass", "type": "ctypes.c_uint32"},
+                {"name": "EventInformation", "type": "ctypes.c_void_p"},
+                {"name": "InformationLength", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNELBASE.DLL|InitOnceComplete": {
+            "arguments": [
+                {"name": "lpInitOnce", "type": "ctypes.c_void_p"},
+                {"name": "dwFlags", "type": "ctypes.c_uint32"},
+                {"name": "lpContext", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "NTDLL.DLL|RtlDisownModuleHeapAllocation": {
+            "arguments": [
+                {"name": "HeapHandle", "type": "ctypes.c_void_p"},
+                {"name": "Allocation", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "BCRYPTPRIMITIVES.DLL|ProcessPrng": {
+            "arguments": [
+                {"name": "pbData", "type": "ctypes.c_void_p"},
+                {"name": "cbData", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "RPCRT4.DLL|UuidCreate": {
+            "arguments": [
+                {"name": "Uuid", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "COMBASE.DLL|CoCreateFreeThreadedMarshaler": {
+            "arguments": [
+                {"name": "pUnkOuter", "type": "ctypes.c_void_p"},
+                {"name": "ppUnkInner", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int32"
+        },
+        "UCRTBASE.DLL|_o___stdio_common_vsprintf_s": {
+            "arguments": [
+                {"name": "options", "type": "ctypes.c_uint64"},
+                {"name": "buffer", "type": "ctypes.c_char_p"},
+                {"name": "buffer_count", "type": "ctypes.c_size_t"},
+                {"name": "format", "type": "ctypes.c_char_p"},
+                {"name": "locale", "type": "ctypes.c_void_p"},
+                {"name": "arglist", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_int"
+        },
+        "UCRTBASE.DLL|_o_malloc": {
+            "arguments": [
+                {"name": "size", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlInitializeSRWLock": {
+            "arguments": [
+                {"name": "SRWLock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|CreateThreadpoolTimer": {
+            "arguments": [
+                {"name": "pfnti", "type": "ctypes.c_void_p"},
+                {"name": "pv", "type": "ctypes.c_void_p"},
+                {"name": "pcbe", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|WaitForSingleObjectEx": {
+            "arguments": [
+                {"name": "hHandle", "type": "ctypes.c_void_p"},
+                {"name": "dwMilliseconds", "type": "ctypes.c_uint32"},
+                {"name": "bAlertable", "type": "ctypes.c_bool"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNELBASE.DLL|WaitForSingleObject": {
+            "arguments": [
+                {"name": "hHandle", "type": "ctypes.c_void_p"},
+                {"name": "dwMilliseconds", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNELBASE.DLL|ReleaseSemaphore": {
+            "arguments": [
+                {"name": "hSemaphore", "type": "ctypes.c_void_p"},
+                {"name": "lReleaseCount", "type": "ctypes.c_int32"},
+                {"name": "lpPreviousCount", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|GetModuleFileNameA": {
+            "arguments": [
+                {"name": "hModule", "type": "ctypes.c_void_p"},
+                {"name": "lpFilename", "type": "ctypes.c_char_p"},
+                {"name": "nSize", "type": "ctypes.c_uint32"}
+            ],
+            "return_value": "ctypes.c_uint32"
+        },
+        "KERNELBASE.DLL|ReleaseMutex": {
+            "arguments": [
+                {"name": "hMutex", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|IsDebuggerPresent": {
+            "arguments": [],
+            "return_value": "ctypes.c_bool"
+        },
+        "KERNELBASE.DLL|MapViewOfFile": {
+            "arguments": [
+                {"name": "hFileMappingObject", "type": "ctypes.c_void_p"},
+                {"name": "dwDesiredAccess", "type": "ctypes.c_uint32"},
+                {"name": "dwFileOffsetHigh", "type": "ctypes.c_uint32"},
+                {"name": "dwFileOffsetLow", "type": "ctypes.c_uint32"},
+                {"name": "dwNumberOfBytesToMap", "type": "ctypes.c_size_t"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlAcquireSRWLockShared": {
+            "arguments": [
+                {"name": "SRWLock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "NTDLL.DLL|RtlReleaseSRWLockShared": {
+            "arguments": [
+                {"name": "SRWLock", "type": "ctypes.c_void_p"}
+            ],
+            "return_value": "ctypes.c_void_p"
+        },
+        "KERNELBASE.DLL|CompareStringOrdinal": {
+            "arguments": [
+                {"name": "lpString1", "type": "ctypes.c_wchar_p"},
+                {"name": "cchCount1", "type": "ctypes.c_int"},
+                {"name": "lpString2", "type": "ctypes.c_wchar_p"},
+                {"name": "cchCount2", "type": "ctypes.c_int"},
+                {"name": "bIgnoreCase", "type": "ctypes.c_bool"}
+            ],
+            "return_value": "ctypes.c_int"
         }
     }
 }

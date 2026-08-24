@@ -4,7 +4,7 @@
 ###################
 #    This module hooks IAT and EAT to monitor all external functions calls,
 #    very useful for [malware] reverse and debugging.
-#    Copyright (C) 2025  Win32Hooking
+#    Copyright (C) 2025, 2026  Win32Hooking
 
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -40,15 +40,13 @@ __url__ = "https://github.com/mauricelambert/Win32Hooking"
 
 __license__ = "GPL-3.0 License"
 __copyright__ = """
-Win32Hooking  Copyright (C) 2025  Maurice Lambert
+Win32Hooking  Copyright (C) 2025, 2026  Maurice Lambert
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions.
 """
 copyright = __copyright__
 license = __license__
-
-print(copyright)
 
 from ctypes import (
     windll,
@@ -110,6 +108,7 @@ from dataclasses import dataclass, field
 from os.path import basename, splitext
 from json import load as json_load
 from _io import _BufferedIOBase
+from code import interact
 from re import fullmatch
 from os import getpid
 
@@ -686,7 +685,7 @@ class Callbacks:
                     function.address = export_function.address
             hooks_IAT(imports, False)
             write_EAT_hooks(exports)
-            hooks_forwarded(forwarded)
+            hooks_forwarded(forwarded, Hooks.export_hooks, imports)
 
         print(
             " " * (4 * (CallbackManager.indent + 1)),
@@ -755,11 +754,15 @@ class Callbacks:
         answer = None
         while answer not in ("b", "c", "e"):
             answer = input(
-                "Enter [b] for breakpoint, [c] to continue and [e] to exit: "
+                f"Enter [b] for breakpoint, [c] to continue and [e] to exit ({type_} {function.module_name} {function.name}): "
             )
 
         if answer == "b":
-            breakpoint()
+            namespace = {}
+            namespace.update(globals())
+            namespace.update(locals())
+            interact(banner="--- Console Python interactive ---", local=namespace, local_exit=True)
+            # breakpoint()
         elif answer == "e":
             exit(1)
 
@@ -1625,7 +1628,7 @@ def hooks_DLL(
     module: MODULEENTRY32,
     functions: Dict[str, Function],
     imports: List[ImportFunction],
-) -> List[Function]:
+) -> Tuple[List[Function], List[Function]]:
     """
     This function hooks a module function addresses
     (all functions in EAT and configured functions in IAT).
@@ -1878,6 +1881,8 @@ def main() -> int:
     This function is the main function to start the script
     from the command line.
     """
+
+    print(copyright)
 
     if len(argv) <= 1:
         print(
